@@ -1,0 +1,20 @@
+{
+  "notFound": "नहीं मिला",
+  "userNotFound": "उपयोगकर्ता नहीं मिला",
+  "emailNotExists": "ईमेल मौजूद नहीं है",
+  "emailNotVerified": "ईमेल सत्यापित नहीं है",
+  "emailExists": "ईमेल पहले से मौजूद है",
+  "emailAlreadyExists": "ईमेल पहले से मौजूद है",
+  "incorrectEmailOrPassword": "ईमेल या पासवर्ड गलत है",
+  "incorrectPassword": "गलत पासवर्ड",
+  "incorrectOldPassword": "वर्तमान पासवर्ड गलत है",
+  "missingOldPassword": "वर्तमान पासवर्ड आवश्यक है",
+  "invalidHash": "अमान्य लिंक",
+  "wrongToken": "अमान्य टोकन",
+  "needLoginViaProvider": "कृपया {provider} के माध्यम से लॉगिन करें",
+  "imageNotExists": "छवि मौजूद नहीं है",
+  "roleNotExists": "भूमिका मौजूद नहीं है",
+  "statusNotExists": "स्थिति मौजूद नहीं है",
+  "selectFile": "कृपया फ़ाइल चुनें",
+  "internalServerError": "आंतरिक सर्वर त्रुटि"
+}

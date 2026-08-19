@@ -1,0 +1,20 @@
+{
+  "notFound": "غير موجود",
+  "userNotFound": "المستخدم غير موجود",
+  "emailNotExists": "البريد الإلكتروني غير موجود",
+  "emailNotVerified": "البريد الإلكتروني غير موثق",
+  "emailExists": "البريد الإلكتروني موجود بالفعل",
+  "emailAlreadyExists": "البريد الإلكتروني موجود بالفعل",
+  "incorrectEmailOrPassword": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+  "incorrectPassword": "كلمة المرور غير صحيحة",
+  "incorrectOldPassword": "كلمة المرور الحالية غير صحيحة",
+  "missingOldPassword": "كلمة المرور الحالية مطلوبة",
+  "invalidHash": "الرابط غير صالح",
+  "wrongToken": "الرمز غير صالح",
+  "needLoginViaProvider": "يرجى تسجيل الدخول عبر {provider}",
+  "imageNotExists": "الصورة غير موجودة",
+  "roleNotExists": "الدور غير موجود",
+  "statusNotExists": "الحالة غير موجودة",
+  "selectFile": "يرجى اختيار ملف",
+  "internalServerError": "خطأ داخلي في الخادم"
+}

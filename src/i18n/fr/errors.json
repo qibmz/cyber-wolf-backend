@@ -1,0 +1,20 @@
+{
+  "notFound": "Introuvable",
+  "userNotFound": "Utilisateur introuvable",
+  "emailNotExists": "L'adresse e-mail n'existe pas",
+  "emailNotVerified": "L'adresse e-mail n'est pas vérifiée",
+  "emailExists": "L'adresse e-mail existe déjà",
+  "emailAlreadyExists": "L'adresse e-mail existe déjà",
+  "incorrectEmailOrPassword": "E-mail ou mot de passe incorrect",
+  "incorrectPassword": "Mot de passe incorrect",
+  "incorrectOldPassword": "Le mot de passe actuel est incorrect",
+  "missingOldPassword": "Le mot de passe actuel est requis",
+  "invalidHash": "Lien invalide",
+  "wrongToken": "Jeton invalide",
+  "needLoginViaProvider": "Veuillez vous connecter via {provider}",
+  "imageNotExists": "L'image n'existe pas",
+  "roleNotExists": "Le rôle n'existe pas",
+  "statusNotExists": "Le statut n'existe pas",
+  "selectFile": "Veuillez sélectionner un fichier",
+  "internalServerError": "Erreur interne du serveur"
+}

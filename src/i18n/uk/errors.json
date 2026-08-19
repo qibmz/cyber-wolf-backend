@@ -1,0 +1,20 @@
+{
+  "notFound": "Не знайдено",
+  "userNotFound": "Користувача не знайдено",
+  "emailNotExists": "Електронна пошта не існує",
+  "emailNotVerified": "Електронну пошту не підтверджено",
+  "emailExists": "Електронна пошта вже існує",
+  "emailAlreadyExists": "Електронна пошта вже існує",
+  "incorrectEmailOrPassword": "Неправильна електронна пошта або пароль",
+  "incorrectPassword": "Неправильний пароль",
+  "incorrectOldPassword": "Неправильний поточний пароль",
+  "missingOldPassword": "Поточний пароль обов'язковий",
+  "invalidHash": "Недійсне посилання",
+  "wrongToken": "Недійсний токен",
+  "needLoginViaProvider": "Будь ласка, увійдіть через {provider}",
+  "imageNotExists": "Зображення не існує",
+  "roleNotExists": "Роль не існує",
+  "statusNotExists": "Статус не існує",
+  "selectFile": "Будь ласка, виберіть файл",
+  "internalServerError": "Внутрішня помилка сервера"
+}

@@ -1,0 +1,20 @@
+{
+  "notFound": "Not found",
+  "userNotFound": "User not found",
+  "emailNotExists": "Email does not exist",
+  "emailNotVerified": "Email is not verified",
+  "emailExists": "Email already exists",
+  "emailAlreadyExists": "Email already exists",
+  "incorrectEmailOrPassword": "Incorrect email or password",
+  "incorrectPassword": "Incorrect password",
+  "incorrectOldPassword": "Current password is incorrect",
+  "missingOldPassword": "Current password is required",
+  "invalidHash": "Invalid link",
+  "wrongToken": "Invalid token",
+  "needLoginViaProvider": "Please sign in via {provider}",
+  "imageNotExists": "Image does not exist",
+  "roleNotExists": "Role does not exist",
+  "statusNotExists": "Status does not exist",
+  "selectFile": "Please select a file",
+  "internalServerError": "Internal server error"
+}

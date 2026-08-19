@@ -9,10 +9,12 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { useContainer } from 'class-validator';
+import { I18nService } from 'nestjs-i18n';
 import { AppModule } from './app.module';
 import validationOptions from './utils/validation-options';
 import { AllConfigType } from './config/config.type';
 import { ResolvePromisesInterceptor } from './utils/serializer.interceptor';
+import { AllExceptionsFilter } from './utils/all-exceptions.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -49,6 +51,16 @@ async function bootstrap() {
     // https://github.com/typestack/class-transformer/issues/549
     new ResolvePromisesInterceptor(),
     new ClassSerializerInterceptor(app.get(Reflector)),
+  );
+  app.useGlobalFilters(
+    new AllExceptionsFilter(app.get(I18nService), {
+      headerLanguage: configService.getOrThrow('app.headerLanguage', {
+        infer: true,
+      }),
+      fallbackLanguage: configService.getOrThrow('app.fallbackLanguage', {
+        infer: true,
+      }),
+    }),
   );
 
   const options = new DocumentBuilder()
