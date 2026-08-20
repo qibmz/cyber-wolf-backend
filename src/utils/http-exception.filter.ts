@@ -11,7 +11,7 @@ import { I18nService } from 'nestjs-i18n';
 export type FieldErrors = Record<string, unknown>;
 
 export interface ApiErrorBody {
-  status: number;
+  code: number;
   msg: string;
   errors: FieldErrors;
 }
@@ -110,7 +110,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       // Boilerplate style: { status, errors: { field: messageKey } }
       if (this.isRecord(body.errors)) {
         return {
-          status,
+          code: status,
           msg:
             this.firstMessage(body.errors, lang) ?? this.statusMessage(status),
           errors: body.errors,
@@ -119,7 +119,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
       if (typeof body.message === 'string') {
         return {
-          status,
+          code: status,
           msg: translateMessage(this.i18n, body.message, lang),
           errors: {},
         };
@@ -127,7 +127,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
       if (Array.isArray(body.message) && typeof body.message[0] === 'string') {
         return {
-          status,
+          code: status,
           msg: translateMessage(this.i18n, body.message[0], lang),
           errors: {},
         };
@@ -135,7 +135,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
       if (typeof body.error === 'string') {
         return {
-          status,
+          code: status,
           msg: translateMessage(this.i18n, body.error, lang),
           errors: {},
         };
@@ -144,14 +144,14 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     if (typeof responseBody === 'string') {
       return {
-        status,
+        code: status,
         msg: translateMessage(this.i18n, responseBody, lang),
         errors: {},
       };
     }
 
     return {
-      status,
+      code: status,
       msg: this.statusMessage(status),
       errors: {},
     };

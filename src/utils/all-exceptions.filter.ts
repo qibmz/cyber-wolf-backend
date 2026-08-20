@@ -48,7 +48,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const status = HttpStatus.INTERNAL_SERVER_ERROR;
     const lang = resolveLanguage(request, this.options);
     const body: ApiErrorBody = {
-      status,
+      code: status,
       msg: translateMessage(this.i18n, 'internalServerError', lang),
       errors: {},
     };

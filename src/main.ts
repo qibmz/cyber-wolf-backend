@@ -14,6 +14,7 @@ import { AppModule } from './app.module';
 import validationOptions from './utils/validation-options';
 import { AllConfigType } from './config/config.type';
 import { ResolvePromisesInterceptor } from './utils/serializer.interceptor';
+import { ResponseInterceptor } from './utils/response.interceptor';
 import { AllExceptionsFilter } from './utils/all-exceptions.filter';
 
 async function bootstrap() {
@@ -47,6 +48,8 @@ async function bootstrap() {
   });
   app.useGlobalPipes(new ValidationPipe(validationOptions));
   app.useGlobalInterceptors(
+    // ResponseInterceptor wraps successful responses into { code, msg, data }
+    new ResponseInterceptor(),
     // ResolvePromisesInterceptor is used to resolve promises in responses because class-transformer can't do it
     // https://github.com/typestack/class-transformer/issues/549
     new ResolvePromisesInterceptor(),
