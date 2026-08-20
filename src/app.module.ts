@@ -23,6 +23,7 @@ import { MailerModule } from './mailer/mailer.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MongooseConfigService } from './database/mongoose-config.service';
 import { DatabaseConfig } from './database/config/database-config.type';
+import { ScheduleModule } from '@nestjs/schedule';
 
 // <database-block>
 const infrastructureDatabaseModule = (databaseConfig() as DatabaseConfig)
@@ -38,8 +39,12 @@ const infrastructureDatabaseModule = (databaseConfig() as DatabaseConfig)
     });
 // </database-block>
 
+import { NewsArticlesModule } from './news-articles/news-articles.module';
+
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
+    NewsArticlesModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [
