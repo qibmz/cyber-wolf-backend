@@ -12,8 +12,7 @@ import type { MailMessage } from '../utils/types/mail-message.type';
 describe('Auth Module', () => {
   const app = APP_URL;
   const mail = `http://${MAIL_HOST}:${MAIL_PORT}`;
-  const newUserFirstName = `Tester${Date.now()}`;
-  const newUserLastName = `E2E`;
+  const newUserNickname = `tester${Date.now()}`;
   const newUserEmail = `User.${Date.now()}@example.com`;
   const newUserPassword = `secret`;
 
@@ -24,8 +23,7 @@ describe('Auth Module', () => {
         .send({
           email: TESTER_EMAIL,
           password: TESTER_PASSWORD,
-          firstName: 'Tester',
-          lastName: 'E2E',
+          nickname: `dup${Date.now()}`,
         })
         .expect(422)
         .expect(({ body }) => {
@@ -39,10 +37,23 @@ describe('Auth Module', () => {
         .send({
           email: newUserEmail,
           password: newUserPassword,
-          firstName: newUserFirstName,
-          lastName: newUserLastName,
+          nickname: newUserNickname,
         })
         .expect(204);
+    });
+
+    it('should fail with exists nickname: /api/v1/auth/email/register (POST)', () => {
+      return request(app)
+        .post('/api/v1/auth/email/register')
+        .send({
+          email: `other.${Date.now()}@example.com`,
+          password: newUserPassword,
+          nickname: newUserNickname,
+        })
+        .expect(422)
+        .expect(({ body }) => {
+          expect(body.errors.nickname).toBeDefined();
+        });
     });
 
     describe('Login', () => {
@@ -132,8 +143,7 @@ describe('Auth Module', () => {
         .send({
           email: userEmail,
           password: userOldPassword,
-          firstName: `Tester${Date.now()}`,
-          lastName: 'E2E',
+          nickname: `forgot${Date.now()}`,
         })
         .expect(204);
 
@@ -204,8 +214,26 @@ describe('Auth Module', () => {
         .expect(({ body }) => {
           expect(body.data.provider).toBeDefined();
           expect(body.data.email).toBeDefined();
+          expect(body.data.nickname).toBe(newUserNickname);
           expect(body.data.hash).not.toBeDefined();
           expect(body.data.password).not.toBeDefined();
+        });
+    });
+
+    it('should update nickname successfully: /api/v1/auth/me (PATCH)', async () => {
+      const updatedNickname = `nick${Date.now()}`;
+
+      await request(app)
+        .patch('/api/v1/auth/me')
+        .auth(newUserApiToken, {
+          type: 'bearer',
+        })
+        .send({
+          nickname: updatedNickname,
+        })
+        .expect(200)
+        .expect(({ body }) => {
+          expect(body.data.nickname).toBe(updatedNickname);
         });
     });
 
@@ -259,7 +287,6 @@ describe('Auth Module', () => {
     });
 
     it('should update profile successfully: /api/v1/auth/me (PATCH)', async () => {
-      const newUserNewName = Date.now();
       const newUserNewPassword = 'new-secret';
       const newUserApiToken = await request(app)
         .post('/api/v1/auth/email/login')
@@ -272,7 +299,6 @@ describe('Auth Module', () => {
           type: 'bearer',
         })
         .send({
-          firstName: newUserNewName,
           password: newUserNewPassword,
         })
         .expect(422);
@@ -283,7 +309,6 @@ describe('Auth Module', () => {
           type: 'bearer',
         })
         .send({
-          firstName: newUserNewName,
           password: newUserNewPassword,
           oldPassword: newUserPassword,
         })
@@ -307,8 +332,6 @@ describe('Auth Module', () => {
     });
 
     it('should update profile email successfully: /api/v1/auth/me (PATCH)', async () => {
-      const newUserFirstName = `Tester${Date.now()}`;
-      const newUserLastName = `E2E`;
       const newUserEmail = `user.${Date.now()}@example.com`;
       const newUserPassword = `secret`;
       const newUserNewEmail = `new.${newUserEmail}`;
@@ -318,8 +341,7 @@ describe('Auth Module', () => {
         .send({
           email: newUserEmail,
           password: newUserPassword,
-          firstName: newUserFirstName,
-          lastName: newUserLastName,
+          nickname: `emailnick${Date.now()}`,
         })
         .expect(204);
 

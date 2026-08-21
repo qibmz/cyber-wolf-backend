@@ -25,8 +25,7 @@ export class UserSeedService {
       const data = new this.model({
         email: 'admin@example.com',
         password: password,
-        firstName: 'Super',
-        lastName: 'Admin',
+        nickname: 'admin',
         role: {
           _id: RoleEnum.admin.toString(),
         },
@@ -48,8 +47,7 @@ export class UserSeedService {
       const data = new this.model({
         email: 'john.doe@example.com',
         password: password,
-        firstName: 'John',
-        lastName: 'Doe',
+        nickname: 'johndoe',
         role: {
           _id: RoleEnum.user.toString(),
         },

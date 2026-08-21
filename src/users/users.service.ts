@@ -18,7 +18,6 @@ import { FileType } from '../files/domain/file';
 import { Role } from '../roles/domain/role';
 import { Status } from '../statuses/domain/status';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UpdateUserNameDto } from './dto/update-user-name.dto';
 
 @Injectable()
 export class UsersService {
@@ -53,6 +52,23 @@ export class UsersService {
         });
       }
       email = createUserDto.email;
+    }
+
+    let nickname: string | null = null;
+
+    if (createUserDto.nickname) {
+      const userObject = await this.usersRepository.findByNickname(
+        createUserDto.nickname,
+      );
+      if (userObject) {
+        throw new UnprocessableEntityException({
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: {
+            nickname: 'nicknameAlreadyExists',
+          },
+        });
+      }
+      nickname = createUserDto.nickname;
     }
 
     let photo: FileType | null | undefined = undefined;
@@ -117,8 +133,8 @@ export class UsersService {
     return this.usersRepository.create({
       // Do not remove comment below.
       // <creating-property-payload />
-      firstName: createUserDto.firstName,
-      lastName: createUserDto.lastName,
+      nickname,
+
       email: email,
       password: password,
       photo: photo,
@@ -157,6 +173,10 @@ export class UsersService {
     return this.usersRepository.findByEmail(email);
   }
 
+  findByNickname(nickname: User['nickname']): Promise<NullableType<User>> {
+    return this.usersRepository.findByNickname(nickname);
+  }
+
   findBySocialIdAndProvider({
     socialId,
     provider,
@@ -167,42 +187,6 @@ export class UsersService {
     return this.usersRepository.findBySocialIdAndProvider({
       socialId,
       provider,
-    });
-  }
-
-  async updateName(
-    id: User['id'],
-    updateUserNameDto: UpdateUserNameDto,
-  ): Promise<User | null> {
-    if (
-      updateUserNameDto.firstName === undefined &&
-      updateUserNameDto.lastName === undefined
-    ) {
-      throw new UnprocessableEntityException({
-        status: HttpStatus.UNPROCESSABLE_ENTITY,
-        errors: {
-          name: 'atLeastOneNameRequired',
-        },
-      });
-    }
-
-    const existing = await this.usersRepository.findById(id);
-    if (!existing) {
-      throw new UnprocessableEntityException({
-        status: HttpStatus.UNPROCESSABLE_ENTITY,
-        errors: {
-          id: 'userNotExists',
-        },
-      });
-    }
-
-    return this.usersRepository.update(id, {
-      ...(updateUserNameDto.firstName !== undefined
-        ? { firstName: updateUserNameDto.firstName }
-        : {}),
-      ...(updateUserNameDto.lastName !== undefined
-        ? { lastName: updateUserNameDto.lastName }
-        : {}),
     });
   }
 
@@ -243,6 +227,27 @@ export class UsersService {
       email = updateUserDto.email;
     } else if (updateUserDto.email === null) {
       email = null;
+    }
+
+    let nickname: string | null | undefined = undefined;
+
+    if (updateUserDto.nickname) {
+      const userObject = await this.usersRepository.findByNickname(
+        updateUserDto.nickname,
+      );
+
+      if (userObject && userObject.id !== id) {
+        throw new UnprocessableEntityException({
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: {
+            nickname: 'nicknameAlreadyExists',
+          },
+        });
+      }
+
+      nickname = updateUserDto.nickname;
+    } else if (updateUserDto.nickname === null) {
+      nickname = null;
     }
 
     let photo: FileType | null | undefined = undefined;
@@ -307,8 +312,8 @@ export class UsersService {
     return this.usersRepository.update(id, {
       // Do not remove comment below.
       // <updating-property-payload />
-      firstName: updateUserDto.firstName,
-      lastName: updateUserDto.lastName,
+      nickname,
+
       email,
       password,
       photo,

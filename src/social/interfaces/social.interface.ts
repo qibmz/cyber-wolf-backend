@@ -1,7 +1,6 @@
 export interface SocialInterface {
   id: string;
-  firstName?: string;
-  lastName?: string;
+  nickname?: string;
   email?: string;
   emailVerified: boolean;
 }

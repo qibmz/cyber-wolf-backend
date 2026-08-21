@@ -21,6 +21,9 @@ import { EntityRelationalHelper } from '../../../../../utils/relational-entity-h
   name: 'user',
 })
 export class UserEntity extends EntityRelationalHelper {
+  @Column({ type: String, unique: true, nullable: true })
+  nickname?: string | null;
+
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -38,14 +41,6 @@ export class UserEntity extends EntityRelationalHelper {
   @Index()
   @Column({ type: String, nullable: true })
   socialId?: string | null;
-
-  @Index()
-  @Column({ type: String, nullable: true })
-  firstName: string | null;
-
-  @Index()
-  @Column({ type: String, nullable: true })
-  lastName: string | null;
 
   @OneToOne(() => FileEntity, {
     eager: true,

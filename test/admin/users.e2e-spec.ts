@@ -30,8 +30,7 @@ describe('Users Module', () => {
         .send({
           email: newUserEmail,
           password: newUserPassword,
-          firstName: `First${Date.now()}`,
-          lastName: 'E2E',
+          nickname: `userfirst${Date.now()}`,
         });
 
       await request(app)
@@ -97,8 +96,6 @@ describe('Users Module', () => {
           .send({
             email: newUserByAdminEmail,
             password: newUserByAdminPassword,
-            firstName: `UserByAdmin${Date.now()}`,
-            lastName: 'E2E',
             role: {
               id: RoleEnum.user,
             },
@@ -156,8 +153,6 @@ describe('Users Module', () => {
           .send({
             email: `user-sort-older.${stamp}@example.com`,
             password: 'secret',
-            firstName: 'Older',
-            lastName: 'Sort',
             role: { id: RoleEnum.user },
             status: { id: StatusEnum.active },
           })
@@ -171,8 +166,6 @@ describe('Users Module', () => {
           .send({
             email: `user-sort-newer.${stamp}@example.com`,
             password: 'secret',
-            firstName: 'Newer',
-            lastName: 'Sort',
             role: { id: RoleEnum.user },
             status: { id: StatusEnum.active },
           })
@@ -191,71 +184,6 @@ describe('Users Module', () => {
             new Date(users[i + 1].createdAt).getTime(),
           );
         }
-      });
-    });
-  });
-
-  describe('Update name', () => {
-    let targetUser: { id: number | string };
-    const targetEmail = `user-name.${Date.now()}@example.com`;
-
-    beforeAll(async () => {
-      await request(app)
-        .post(`/api/v1/users`)
-        .auth(apiToken, { type: 'bearer' })
-        .send({
-          email: targetEmail,
-          password: 'secret',
-          firstName: 'Before',
-          lastName: 'Name',
-          role: { id: RoleEnum.user },
-          status: { id: StatusEnum.active },
-        })
-        .expect(201)
-        .then(({ body }) => {
-          targetUser = body.data;
-        });
-    });
-
-    describe('User with "Admin" role', () => {
-      it('should update user name: /api/v1/users/:id/name (PATCH)', () => {
-        return request(app)
-          .patch(`/api/v1/users/${targetUser.id}/name`)
-          .auth(apiToken, { type: 'bearer' })
-          .send({
-            firstName: 'After',
-            lastName: 'Updated',
-          })
-          .expect(200)
-          .expect(({ body }) => {
-            expect(body.data.firstName).toBe('After');
-            expect(body.data.lastName).toBe('Updated');
-          });
-      });
-
-      it('should fail when name fields are missing: /api/v1/users/:id/name (PATCH)', () => {
-        return request(app)
-          .patch(`/api/v1/users/${targetUser.id}/name`)
-          .auth(apiToken, { type: 'bearer' })
-          .send({})
-          .expect(422);
-      });
-
-      it('should fail for non-existing user: /api/v1/users/:id/name (PATCH)', () => {
-        return request(app)
-          .patch(`/api/v1/users/999999999/name`)
-          .auth(apiToken, { type: 'bearer' })
-          .send({ firstName: 'Ghost' })
-          .expect(422);
-      });
-    });
-
-    describe('Guest', () => {
-      it('should fail without auth: /api/v1/users/:id/name (PATCH)', () => {
-        return request(app)
-          .patch(`/api/v1/users/${targetUser.id}/name`)
-          .send({ firstName: 'Nope' })
-          .expect(401);
       });
     });
   });

@@ -91,6 +91,15 @@ export class UsersDocumentRepository implements UserRepository {
     return userObject ? UserMapper.toDomain(userObject) : null;
   }
 
+  async findByNickname(
+    nickname: User['nickname'],
+  ): Promise<NullableType<User>> {
+    if (!nickname) return null;
+
+    const userObject = await this.usersModel.findOne({ nickname });
+    return userObject ? UserMapper.toDomain(userObject) : null;
+  }
+
   async findBySocialIdAndProvider({
     socialId,
     provider,

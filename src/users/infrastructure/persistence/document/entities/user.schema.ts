@@ -20,6 +20,13 @@ export class UserSchemaClass extends EntityDocumentHelper {
   @Prop({
     type: String,
     unique: true,
+    sparse: true,
+  })
+  nickname?: string | null;
+
+  @Prop({
+    type: String,
+    unique: true,
   })
   email: string | null;
 
@@ -36,16 +43,6 @@ export class UserSchemaClass extends EntityDocumentHelper {
     default: null,
   })
   socialId?: string | null;
-
-  @Prop({
-    type: String,
-  })
-  firstName: string | null;
-
-  @Prop({
-    type: String,
-  })
-  lastName: string | null;
 
   @Prop({
     type: FileSchemaClass,

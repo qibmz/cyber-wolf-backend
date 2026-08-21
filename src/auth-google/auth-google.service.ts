@@ -56,8 +56,6 @@ export class AuthGoogleService {
       id: data.sub,
       email: data.email,
       emailVerified,
-      firstName: data.given_name,
-      lastName: data.family_name,
     };
   }
 }
