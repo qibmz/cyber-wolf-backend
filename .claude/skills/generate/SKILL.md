@@ -1,21 +1,13 @@
 ---
 name: generate
-description: Add entities/schemas and properties to existing entities via this project's CLI generators (npm run generate:resource:*, npm run add:property:to-*). Use when adding a new entity, a new schema, or a new property to an existing entity/schema in this NestJS boilerplate.
+description: Add entities and properties to existing entities via this project's CLI generators (npm run generate:resource:relational, npm run add:property:to-relational). Use when adding a new entity or a new property to an existing entity in this NestJS boilerplate.
 ---
 
 # Generate Entities and Properties
 
-## Detect the database variant
+This project uses PostgreSQL/TypeORM only. Use `{db}` = `relational`.
 
-Before running any command, grep `package.json` `scripts` to determine `{db}`:
-
-- `generate:resource:all-db` present → `{db}` = `all-db` (PostgreSQL + MongoDB).
-- `generate:resource:relational` present (and no `all-db`) → `{db}` = `relational` (PostgreSQL/TypeORM).
-- `generate:resource:document` present (and no `all-db`) → `{db}` = `document` (MongoDB).
-
-Do not ask the user — whichever `generate:resource:*` and `add:property:to-*` scripts remain in `package.json` are exactly the right ones to run.
-
-## Add an entity/schema
+## Add an entity
 
 **Rules:**
 - **Never generate `User` or `File` entities** — they already exist. You can reference them in relationships.
@@ -24,14 +16,12 @@ Do not ask the user — whichever `generate:resource:*` and `add:property:to-*` 
 **Command:**
 
 ```bash
-npm run generate:resource:{db} -- --name {EntityName}
+npm run generate:resource:relational -- --name {EntityName}
 ```
-
-`{db}` comes from the detection section above.
 
 Run sequentially, one entity at a time.
 
-## Add a property to an entity/schema
+## Add a property to an entity
 
 **Rules:**
 - **Never add `id`, `createdAt`, or `updatedAt`** — these are predefined for all entities.
@@ -51,7 +41,7 @@ Run sequentially, one entity at a time.
 **Command:**
 
 ```bash
-npm run add:property:to-{db} -- --name {EntityName} --property {propertyName} --kind {kind} --type {type} --referenceType {referenceType} --propertyInReference {propertyInReference} --isAddToDto {isAddToDto} --isOptional {isOptional} --isNullable {isNullable} --shouldAutoLoad {shouldAutoLoad}
+npm run add:property:to-relational -- --name {EntityName} --property {propertyName} --kind {kind} --type {type} --referenceType {referenceType} --propertyInReference {propertyInReference} --isAddToDto {isAddToDto} --isOptional {isOptional} --isNullable {isNullable} --shouldAutoLoad {shouldAutoLoad}
 ```
 
 **Argument rules:**
@@ -64,7 +54,7 @@ npm run add:property:to-{db} -- --name {EntityName} --property {propertyName} --
 - `--isAddToDto`: `true` | `false` — whether the property can be set via HTTP request
 - `--isOptional`: `true` | `false`
 - `--isNullable`: `true` | `false` — only meaningful when `isOptional` is `true`
-- `--shouldAutoLoad`: `true` (default) | `false`. Only meaningful for `kind=reference`. `true` emits `eager: true` (TypeORM) and `autopopulate: true` (Mongoose). `false` stores only the related entity's id (Mongoose: `string` field + ObjectId; TypeORM: `eager: false`). No effect for `primitive`/`denormalized`.
+- `--shouldAutoLoad`: `true` (default) | `false`. Only meaningful for `kind=reference`. `true` emits `eager: true` (TypeORM). `false` stores only the related entity's id (`eager: false`). No effect for `primitive`/`denormalized`.
 
 **Omit arguments that don't apply** (e.g., omit `--referenceType` for primitive properties, omit `--propertyInReference` unless `referenceType` is `oneToMany`).
 

@@ -18,7 +18,7 @@ describe('Users Module', () => {
   });
 
   describe('Update', () => {
-    let newUser: { id: number | string };
+    let newUser: { id: number };
     const newUserEmail = `user-first.${Date.now()}@example.com`;
     const newUserChangedEmail = `user-first-changed.${Date.now()}@example.com`;
     const newUserPassword = `secret`;

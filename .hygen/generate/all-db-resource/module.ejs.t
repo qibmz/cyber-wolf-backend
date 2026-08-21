@@ -8,22 +8,14 @@ import {
 import { <%= h.inflection.transform(name, ['pluralize']) %>Service } from './<%= h.inflection.transform(name, ['pluralize', 'underscore', 'dasherize']) %>.service';
 import { <%= h.inflection.transform(name, ['pluralize']) %>Controller } from './<%= h.inflection.transform(name, ['pluralize', 'underscore', 'dasherize']) %>.controller';
 import { Relational<%= name %>PersistenceModule } from './infrastructure/persistence/relational/relational-persistence.module';
-import databaseConfig from '../database/config/database.config';
-import { DatabaseConfig } from '../database/config/database-config.type';
-import { Document<%= name %>PersistenceModule } from './infrastructure/persistence/document/document-persistence.module';
-
-const infrastructurePersistenceModule = (databaseConfig() as DatabaseConfig)
-  .isDocumentDatabase
-  ? Document<%= name %>PersistenceModule
-  : Relational<%= name %>PersistenceModule;
 
 @Module({
   imports: [
     // do not remove this comment
-    infrastructurePersistenceModule,
+    Relational<%= name %>PersistenceModule,
   ],
   controllers: [<%= h.inflection.transform(name, ['pluralize']) %>Controller],
   providers: [<%= h.inflection.transform(name, ['pluralize']) %>Service],
-  exports: [<%= h.inflection.transform(name, ['pluralize']) %>Service, infrastructurePersistenceModule],
+  exports: [<%= h.inflection.transform(name, ['pluralize']) %>Service, Relational<%= name %>PersistenceModule],
 })
 export class <%= h.inflection.transform(name, ['pluralize']) %>Module {}
