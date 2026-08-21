@@ -6,7 +6,7 @@ import { User } from '../../../../domain/user';
 import { UserRepository } from '../../user.repository';
 import { UserSchemaClass } from '../entities/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { QueryFilter, Model } from 'mongoose';
+import { QueryFilter, Model, Types } from 'mongoose';
 import { UserMapper } from '../mappers/user.mapper';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 import { PaginatedResult } from '../../../../../utils/types/paginated-result.type';
@@ -69,6 +69,10 @@ export class UsersDocumentRepository implements UserRepository {
   }
 
   async findById(id: User['id']): Promise<NullableType<User>> {
+    if (!Types.ObjectId.isValid(String(id))) {
+      return null;
+    }
+
     const userObject = await this.usersModel.findById(id);
     return userObject ? UserMapper.toDomain(userObject) : null;
   }
