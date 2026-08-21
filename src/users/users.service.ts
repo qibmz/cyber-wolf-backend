@@ -18,6 +18,7 @@ import { FileType } from '../files/domain/file';
 import { Role } from '../roles/domain/role';
 import { Status } from '../statuses/domain/status';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserNameDto } from './dto/update-user-name.dto';
 
 @Injectable()
 export class UsersService {
@@ -166,6 +167,42 @@ export class UsersService {
     return this.usersRepository.findBySocialIdAndProvider({
       socialId,
       provider,
+    });
+  }
+
+  async updateName(
+    id: User['id'],
+    updateUserNameDto: UpdateUserNameDto,
+  ): Promise<User | null> {
+    if (
+      updateUserNameDto.firstName === undefined &&
+      updateUserNameDto.lastName === undefined
+    ) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          name: 'atLeastOneNameRequired',
+        },
+      });
+    }
+
+    const existing = await this.usersRepository.findById(id);
+    if (!existing) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          id: 'userNotExists',
+        },
+      });
+    }
+
+    return this.usersRepository.update(id, {
+      ...(updateUserNameDto.firstName !== undefined
+        ? { firstName: updateUserNameDto.firstName }
+        : {}),
+      ...(updateUserNameDto.lastName !== undefined
+        ? { lastName: updateUserNameDto.lastName }
+        : {}),
     });
   }
 

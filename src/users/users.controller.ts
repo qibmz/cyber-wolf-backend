@@ -14,10 +14,12 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserNameDto } from './dto/update-user-name.dto';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
@@ -104,6 +106,27 @@ export class UsersController {
   })
   findOne(@Param('id') id: User['id']): Promise<NullableType<User>> {
     return this.usersService.findById(id);
+  }
+
+  @ApiOkResponse({
+    type: User,
+  })
+  @SerializeOptions({
+    groups: ['admin'],
+  })
+  @Patch(':id/name')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: '修改用户姓名（admin）' })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+  })
+  updateName(
+    @Param('id') id: User['id'],
+    @Body() updateUserNameDto: UpdateUserNameDto,
+  ): Promise<User | null> {
+    return this.usersService.updateName(id, updateUserNameDto);
   }
 
   @ApiOkResponse({
