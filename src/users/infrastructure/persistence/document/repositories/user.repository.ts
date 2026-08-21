@@ -9,6 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { QueryFilter, Model } from 'mongoose';
 import { UserMapper } from '../mappers/user.mapper';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { PaginatedResult } from '../../../../../utils/types/paginated-result.type';
 
 @Injectable()
 export class UsersDocumentRepository implements UserRepository {
@@ -24,7 +25,7 @@ export class UsersDocumentRepository implements UserRepository {
     return UserMapper.toDomain(userObject);
   }
 
-  async findManyWithPagination({
+  async findPage({
     filterOptions,
     sortOptions,
     paginationOptions,
@@ -32,7 +33,7 @@ export class UsersDocumentRepository implements UserRepository {
     filterOptions?: FilterUserDto | null;
     sortOptions?: SortUserDto[] | null;
     paginationOptions: IPaginationOptions;
-  }): Promise<User[]> {
+  }): Promise<PaginatedResult<User>> {
     const where: QueryFilter<UserSchemaClass> = {};
     if (filterOptions?.roles?.length) {
       where['role._id'] = {
@@ -40,24 +41,31 @@ export class UsersDocumentRepository implements UserRepository {
       };
     }
 
-    const userObjects = await this.usersModel
-      .find(where)
-      .sort(
-        sortOptions?.length
-          ? sortOptions.reduce(
-              (accumulator, sort) => ({
-                ...accumulator,
-                [sort.orderBy === 'id' ? '_id' : sort.orderBy]:
-                  sort.order.toUpperCase() === 'ASC' ? 1 : -1,
-              }),
-              {},
-            )
-          : { createdAt: -1 },
-      )
-      .skip((paginationOptions.page - 1) * paginationOptions.limit)
-      .limit(paginationOptions.limit);
+    const sort = sortOptions?.length
+      ? sortOptions.reduce(
+          (accumulator, sortOption) => ({
+            ...accumulator,
+            [sortOption.orderBy === 'id' ? '_id' : sortOption.orderBy]:
+              sortOption.order.toUpperCase() === 'ASC' ? 1 : -1,
+          }),
+          {},
+        )
+      : { createdAt: -1 };
 
-    return userObjects.map((userObject) => UserMapper.toDomain(userObject));
+    const [userObjects, total] = await Promise.all([
+      this.usersModel
+        .find(where)
+        .sort(sort)
+        .skip((paginationOptions.page - 1) * paginationOptions.limit)
+        .limit(paginationOptions.limit),
+      this.usersModel.countDocuments(where),
+    ]);
+
+    return {
+      data: userObjects.map((userObject) => UserMapper.toDomain(userObject)),
+      total,
+      paginationOptions,
+    };
   }
 
   async findById(id: User['id']): Promise<NullableType<User>> {

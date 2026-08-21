@@ -7,6 +7,7 @@ import { NewsArticle } from '../../../../domain/news-article';
 import { NewsArticleRepository } from '../../news-article.repository';
 import { NewsArticleMapper } from '../mappers/news-article.mapper';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { PaginatedResult } from '../../../../../utils/types/paginated-result.type';
 
 @Injectable()
 export class NewsArticleRelationalRepository implements NewsArticleRepository {
@@ -23,29 +24,32 @@ export class NewsArticleRelationalRepository implements NewsArticleRepository {
     return NewsArticleMapper.toDomain(newEntity);
   }
 
-  async findAllWithPagination({
+  async findPage({
     paginationOptions,
     category,
   }: {
     paginationOptions: IPaginationOptions;
     category?: string;
-  }): Promise<NewsArticle[]> {
-    const entities = await this.newsArticleRepository.find({
-      skip: (paginationOptions.page - 1) * paginationOptions.limit,
-      take: paginationOptions.limit,
-      where: category ? { category } : {},
-      order: {
-        publishedAt: 'DESC',
-      },
-    });
+  }): Promise<PaginatedResult<NewsArticle>> {
+    const where = category ? { category } : {};
 
-    return entities.map((entity) => NewsArticleMapper.toDomain(entity));
-  }
+    const [entities, total] = await Promise.all([
+      this.newsArticleRepository.find({
+        skip: (paginationOptions.page - 1) * paginationOptions.limit,
+        take: paginationOptions.limit,
+        where,
+        order: {
+          publishedAt: 'DESC',
+        },
+      }),
+      this.newsArticleRepository.count({ where }),
+    ]);
 
-  async count({ category }: { category?: string }): Promise<number> {
-    return this.newsArticleRepository.count({
-      where: category ? { category } : {},
-    });
+    return {
+      data: entities.map((entity) => NewsArticleMapper.toDomain(entity)),
+      total,
+      paginationOptions,
+    };
   }
 
   async findCategories(): Promise<string[]> {

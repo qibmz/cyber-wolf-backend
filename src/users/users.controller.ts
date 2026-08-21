@@ -36,7 +36,7 @@ import { QueryUserDto } from './dto/query-user.dto';
 import { User } from './domain/user';
 import { UsersService } from './users.service';
 import { RolesGuard } from '../roles/roles.guard';
-import { infinityPagination } from '../utils/infinity-pagination';
+import { toInfinityPagination } from '../utils/infinity-pagination';
 
 @ApiBearerAuth()
 @Roles(RoleEnum.admin)
@@ -78,8 +78,8 @@ export class UsersController {
       limit = 50;
     }
 
-    return infinityPagination(
-      await this.usersService.findManyWithPagination({
+    return toInfinityPagination(
+      await this.usersService.findPage({
         filterOptions: query?.filters,
         sortOptions: query?.sort,
         paginationOptions: {
@@ -87,7 +87,6 @@ export class UsersController {
           limit,
         },
       }),
-      { page, limit },
     );
   }
 

@@ -210,24 +210,20 @@ export class NewsArticlesService {
     return media?.$?.url;
   }
 
-  findAllWithPagination({
+  findPage({
     paginationOptions,
     category,
   }: {
     paginationOptions: IPaginationOptions;
     category?: string;
   }) {
-    return this.newsArticleRepository.findAllWithPagination({
+    return this.newsArticleRepository.findPage({
       paginationOptions: {
         page: paginationOptions.page,
         limit: paginationOptions.limit,
       },
       category,
     });
-  }
-
-  count(category?: string) {
-    return this.newsArticleRepository.count({ category });
   }
 
   findCategories() {

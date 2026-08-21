@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Param, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Query,
+  UseGuards,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { NewsArticlesService } from './news-articles.service';
 import {
@@ -12,7 +21,7 @@ import {
   InfinityPaginationResponse,
   InfinityPaginationResponseDto,
 } from '../utils/dto/infinity-pagination-response.dto';
-import { infinityPagination } from '../utils/infinity-pagination';
+import { toInfinityPagination } from '../utils/infinity-pagination';
 import { FindAllNewsArticlesDto } from './dto/find-all-news-articles.dto';
 import { FetchResult } from './news-articles.service';
 import { Roles } from '../roles/roles.decorator';
@@ -33,31 +42,26 @@ export class NewsArticlesController {
   })
   async findAll(
     @Query() query: FindAllNewsArticlesDto,
-  ): Promise<InfinityPaginationResponseDto<NewsArticle> & { total: number }> {
+  ): Promise<InfinityPaginationResponseDto<NewsArticle>> {
     const page = query?.page ?? 1;
     let limit = query?.limit ?? 10;
     if (limit > 50) {
       limit = 50;
     }
 
-    const [articles, total] = await Promise.all([
-      this.newsArticlesService.findAllWithPagination({
+    return toInfinityPagination(
+      await this.newsArticlesService.findPage({
         paginationOptions: {
           page,
           limit,
         },
         category: query.category,
       }),
-      this.newsArticlesService.count(query.category),
-    ]);
-
-    return {
-      ...infinityPagination(articles, { page, limit }),
-      total,
-    };
+    );
   }
 
   @Post('fetch')
+  @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @Roles(RoleEnum.admin)
   @UseGuards(AuthGuard('jwt'), RolesGuard)

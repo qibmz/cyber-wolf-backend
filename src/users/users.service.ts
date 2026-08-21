@@ -129,7 +129,7 @@ export class UsersService {
     });
   }
 
-  findManyWithPagination({
+  findPage({
     filterOptions,
     sortOptions,
     paginationOptions,
@@ -137,8 +137,8 @@ export class UsersService {
     filterOptions?: FilterUserDto | null;
     sortOptions?: SortUserDto[] | null;
     paginationOptions: IPaginationOptions;
-  }): Promise<User[]> {
-    return this.usersRepository.findManyWithPagination({
+  }) {
+    return this.usersRepository.findPage({
       filterOptions,
       sortOptions,
       paginationOptions,

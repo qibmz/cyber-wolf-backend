@@ -9,6 +9,7 @@ import { User } from '../../../../domain/user';
 import { UserRepository } from '../../user.repository';
 import { UserMapper } from '../mappers/user.mapper';
 import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
+import { PaginatedResult } from '../../../../../utils/types/paginated-result.type';
 
 @Injectable()
 export class UsersRelationalRepository implements UserRepository {
@@ -25,7 +26,7 @@ export class UsersRelationalRepository implements UserRepository {
     return UserMapper.toDomain(newEntity);
   }
 
-  async findManyWithPagination({
+  async findPage({
     filterOptions,
     sortOptions,
     paginationOptions,
@@ -33,7 +34,7 @@ export class UsersRelationalRepository implements UserRepository {
     filterOptions?: FilterUserDto | null;
     sortOptions?: SortUserDto[] | null;
     paginationOptions: IPaginationOptions;
-  }): Promise<User[]> {
+  }): Promise<PaginatedResult<User>> {
     const where: FindOptionsWhere<UserEntity> = {};
     if (filterOptions?.roles?.length) {
       where.role = filterOptions.roles.map((role) => ({
@@ -41,22 +42,31 @@ export class UsersRelationalRepository implements UserRepository {
       }));
     }
 
-    const entities = await this.usersRepository.find({
-      skip: (paginationOptions.page - 1) * paginationOptions.limit,
-      take: paginationOptions.limit,
-      where: where,
-      order: sortOptions?.length
-        ? sortOptions.reduce(
-            (accumulator, sort) => ({
-              ...accumulator,
-              [sort.orderBy]: sort.order,
-            }),
-            {},
-          )
-        : { createdAt: 'DESC' },
-    });
+    const order = sortOptions?.length
+      ? sortOptions.reduce(
+          (accumulator, sort) => ({
+            ...accumulator,
+            [sort.orderBy]: sort.order,
+          }),
+          {},
+        )
+      : { createdAt: 'DESC' as const };
 
-    return entities.map((user) => UserMapper.toDomain(user));
+    const [entities, total] = await Promise.all([
+      this.usersRepository.find({
+        skip: (paginationOptions.page - 1) * paginationOptions.limit,
+        take: paginationOptions.limit,
+        where,
+        order,
+      }),
+      this.usersRepository.count({ where }),
+    ]);
+
+    return {
+      data: entities.map((user) => UserMapper.toDomain(user)),
+      total,
+      paginationOptions,
+    };
   }
 
   async findById(id: User['id']): Promise<NullableType<User>> {

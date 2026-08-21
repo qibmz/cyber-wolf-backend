@@ -1,6 +1,7 @@
 import { DeepPartial } from '../../../utils/types/deep-partial.type';
 import { NullableType } from '../../../utils/types/nullable.type';
 import { IPaginationOptions } from '../../../utils/types/pagination-options';
+import { PaginatedResult } from '../../../utils/types/paginated-result.type';
 import { NewsArticle } from '../../domain/news-article';
 
 export abstract class NewsArticleRepository {
@@ -8,15 +9,13 @@ export abstract class NewsArticleRepository {
     data: Omit<NewsArticle, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<NewsArticle>;
 
-  abstract findAllWithPagination({
+  abstract findPage({
     paginationOptions,
     category,
   }: {
     paginationOptions: IPaginationOptions;
     category?: string;
-  }): Promise<NewsArticle[]>;
-
-  abstract count({ category }: { category?: string }): Promise<number>;
+  }): Promise<PaginatedResult<NewsArticle>>;
 
   abstract findCategories(): Promise<string[]>;
 

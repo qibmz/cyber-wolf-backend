@@ -28,7 +28,7 @@ import {
   InfinityPaginationResponse,
   InfinityPaginationResponseDto,
 } from '../utils/dto/infinity-pagination-response.dto';
-import { infinityPagination } from '../utils/infinity-pagination';
+import { toInfinityPagination } from '../utils/infinity-pagination';
 import { FindAll<%= h.inflection.transform(name, ['pluralize']) %>Dto } from './dto/find-all-<%= h.inflection.transform(name, ['pluralize', 'underscore', 'dasherize']) %>.dto';
 
 @ApiTags('<%= h.inflection.transform(name, ['pluralize', 'humanize']) %>')
@@ -62,14 +62,13 @@ export class <%= h.inflection.transform(name, ['pluralize']) %>Controller {
       limit = 50;
     }
 
-    return infinityPagination(
-      await this.<%= h.inflection.camelize(h.inflection.pluralize(name), true) %>Service.findAllWithPagination({
+    return toInfinityPagination(
+      await this.<%= h.inflection.camelize(h.inflection.pluralize(name), true) %>Service.findPage({
         paginationOptions: {
           page,
           limit,
         },
       }),
-      { page, limit },
     );
   }
 
