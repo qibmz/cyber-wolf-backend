@@ -133,8 +133,7 @@ export class UsersService {
     return this.usersRepository.create({
       // Do not remove comment below.
       // <creating-property-payload />
-      nickname,
-
+      ...(nickname ? { nickname } : {}),
       email: email,
       password: password,
       photo: photo,

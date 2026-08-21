@@ -19,8 +19,6 @@ export type UserSchemaDocument = HydratedDocument<UserSchemaClass>;
 export class UserSchemaClass extends EntityDocumentHelper {
   @Prop({
     type: String,
-    unique: true,
-    sparse: true,
   })
   nickname?: string | null;
 
@@ -71,4 +69,13 @@ export class UserSchemaClass extends EntityDocumentHelper {
 
 export const UserSchema = SchemaFactory.createForClass(UserSchemaClass);
 
+// Only index real nickname strings so multiple missing/null values do not
+// collide under a unique index (Mongo treats null as a duplicate key).
+UserSchema.index(
+  { nickname: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { nickname: { $type: 'string' } },
+  },
+);
 UserSchema.index({ 'role._id': 1 });

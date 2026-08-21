@@ -65,7 +65,9 @@ export class UserMapper {
     }
 
     const persistenceSchema = new UserSchemaClass();
-    persistenceSchema.nickname = domainEntity.nickname;
+    if (domainEntity.nickname != null) {
+      persistenceSchema.nickname = domainEntity.nickname;
+    }
 
     if (domainEntity.id && typeof domainEntity.id === 'string') {
       persistenceSchema._id = domainEntity.id;
