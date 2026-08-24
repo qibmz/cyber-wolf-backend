@@ -7,32 +7,35 @@ import {
 import { FileRepository } from '../../persistence/file.repository';
 
 import { FileUploadDto } from './dto/file.dto';
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import { ConfigService } from '@nestjs/config';
 import { FileType } from '../../../domain/file';
 import { AllConfigType } from '../../../../config/config.type';
+import { buildObjectKey, createFileS3Client } from '../s3-client.factory';
+import { FileConfig } from '../../../config/file-config.type';
 
 @Injectable()
 export class FilesS3PresignedService {
-  private s3: S3Client;
+  private s3;
 
   constructor(
     private readonly fileRepository: FileRepository,
     private readonly configService: ConfigService<AllConfigType>,
   ) {
-    this.s3 = new S3Client({
-      region: configService.get('file.awsS3Region', { infer: true }),
-      credentials: {
-        accessKeyId: configService.getOrThrow('file.accessKeyId', {
-          infer: true,
-        }),
-        secretAccessKey: configService.getOrThrow('file.secretAccessKey', {
-          infer: true,
-        }),
-      },
-    });
+    const fileCfg = {
+      accessKeyId: configService.getOrThrow('file.accessKeyId', {
+        infer: true,
+      }),
+      secretAccessKey: configService.getOrThrow('file.secretAccessKey', {
+        infer: true,
+      }),
+      awsS3Region: configService.get('file.awsS3Region', { infer: true }),
+      awsS3Endpoint: configService.get('file.awsS3Endpoint', { infer: true }),
+    } as FileConfig;
+
+    this.s3 = createFileS3Client(fileCfg);
   }
 
   async create(
@@ -69,10 +72,19 @@ export class FilesS3PresignedService {
       });
     }
 
-    const key = `${randomStringGenerator()}.${file.fileName
-      .split('.')
-      .pop()
-      ?.toLowerCase()}`;
+    const fileCfg = {
+      awsS3KeyPrefix: this.configService.get('file.awsS3KeyPrefix', {
+        infer: true,
+      }),
+    } as FileConfig;
+
+    const key = buildObjectKey(
+      fileCfg,
+      `${randomStringGenerator()}.${file.fileName
+        .split('.')
+        .pop()
+        ?.toLowerCase()}`,
+    );
 
     const command = new PutObjectCommand({
       Bucket: this.configService.getOrThrow('file.awsDefaultS3Bucket', {

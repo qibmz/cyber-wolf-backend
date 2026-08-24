@@ -7,13 +7,14 @@ import { FilesS3Controller } from './files.controller';
 import { MulterModule } from '@nestjs/platform-express';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
-import { S3Client } from '@aws-sdk/client-s3';
 import multerS3 from 'multer-s3';
 
 import { FilesS3Service } from './files.service';
 
 import { RelationalFilePersistenceModule } from '../../persistence/relational/relational-persistence.module';
 import { AllConfigType } from '../../../../config/config.type';
+import { buildObjectKey, createFileS3Client } from '../s3-client.factory';
+import { FileConfig } from '../../../config/file-config.type';
 
 @Module({
   imports: [
@@ -22,17 +23,23 @@ import { AllConfigType } from '../../../../config/config.type';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService<AllConfigType>) => {
-        const s3 = new S3Client({
-          region: configService.get('file.awsS3Region', { infer: true }),
-          credentials: {
-            accessKeyId: configService.getOrThrow('file.accessKeyId', {
-              infer: true,
-            }),
-            secretAccessKey: configService.getOrThrow('file.secretAccessKey', {
-              infer: true,
-            }),
-          },
-        });
+        const fileCfg = {
+          accessKeyId: configService.getOrThrow('file.accessKeyId', {
+            infer: true,
+          }),
+          secretAccessKey: configService.getOrThrow('file.secretAccessKey', {
+            infer: true,
+          }),
+          awsS3Region: configService.get('file.awsS3Region', { infer: true }),
+          awsS3Endpoint: configService.get('file.awsS3Endpoint', {
+            infer: true,
+          }),
+          awsS3KeyPrefix: configService.get('file.awsS3KeyPrefix', {
+            infer: true,
+          }),
+        } as FileConfig;
+
+        const s3 = createFileS3Client(fileCfg);
 
         return {
           fileFilter: (request, file, callback) => {
@@ -57,13 +64,11 @@ import { AllConfigType } from '../../../../config/config.type';
             }),
             contentType: multerS3.AUTO_CONTENT_TYPE,
             key: (request, file, callback) => {
-              callback(
-                null,
-                `${randomStringGenerator()}.${file.originalname
-                  .split('.')
-                  .pop()
-                  ?.toLowerCase()}`,
-              );
+              const name = `${randomStringGenerator()}.${file.originalname
+                .split('.')
+                .pop()
+                ?.toLowerCase()}`;
+              callback(null, buildObjectKey(fileCfg, name));
             },
           }),
           limits: {
