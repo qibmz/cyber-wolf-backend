@@ -15,6 +15,9 @@
   "imageNotExists": "图片不存在",
   "roleNotExists": "角色不存在",
   "statusNotExists": "状态不存在",
+  "categoryNotExists": "资讯分类不存在",
+  "categoryNameExists": "资讯分类名称已存在",
+  "categoryNameRequired": "资讯分类名称不能为空",
   "selectFile": "请选择文件",
   "internalServerError": "服务器内部错误"
 }

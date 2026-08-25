@@ -1,16 +1,15 @@
-import {
-  // common
-  Injectable,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import Parser from 'rss-parser';
 import { CreateNewsArticleDto } from './dto/create-news-article.dto';
 import { UpdateNewsArticleDto } from './dto/update-news-article.dto';
 import { NewsArticleRepository } from './infrastructure/persistence/news-article.repository';
 import { IPaginationOptions } from '../utils/types/pagination-options';
+import { DeletedStatus } from '../utils/types/deleted-status';
 import { NewsArticle } from './domain/news-article';
 import { RssFeedConfig, RSS_FEEDS } from './rss-feeds.config';
+import { NewsCategoriesService } from '../news-categories/news-categories.service';
+import { NewsCategory } from '../news-categories/domain/news-category';
 
 type RssItem = Parser.Item & {
   'media:content'?: { $?: { url?: string } } | Array<{ $?: { url?: string } }>;
@@ -29,8 +28,8 @@ export class NewsArticlesService {
   private readonly parser: Parser<unknown, RssItem>;
 
   constructor(
-    // Dependencies here
     private readonly newsArticleRepository: NewsArticleRepository,
+    private readonly newsCategoriesService: NewsCategoriesService,
   ) {
     this.parser = new Parser({
       timeout: 15000,
@@ -45,14 +44,17 @@ export class NewsArticlesService {
     });
   }
 
-  create(createNewsArticleDto: CreateNewsArticleDto) {
+  async create(createNewsArticleDto: CreateNewsArticleDto) {
+    const category = await this.newsCategoriesService.assertCategoryNameExists(
+      createNewsArticleDto.category,
+    );
+
     return this.newsArticleRepository.create({
-      coverColor: createNewsArticleDto.coverColor,
       sourceName: createNewsArticleDto.sourceName,
       sourceId: createNewsArticleDto.sourceId,
       publishedAt: createNewsArticleDto.publishedAt,
       coverImage: createNewsArticleDto.coverImage,
-      category: createNewsArticleDto.category,
+      category,
       url: createNewsArticleDto.url,
       summary: createNewsArticleDto.summary,
       title: createNewsArticleDto.title,
@@ -106,6 +108,9 @@ export class NewsArticlesService {
           return null;
         }
 
+        const categoryName =
+          this.extractCategory(item) ?? feed.fallbackCategory;
+
         return {
           item,
           url,
@@ -113,6 +118,7 @@ export class NewsArticlesService {
           summary: item.contentSnippet ?? item.summary ?? '',
           coverImage: this.extractImage(item),
           publishedAt: item.isoDate ? new Date(item.isoDate) : new Date(),
+          categoryName,
         };
       })
       .filter(
@@ -125,6 +131,7 @@ export class NewsArticlesService {
           summary: string;
           coverImage: string | undefined;
           publishedAt: Date;
+          categoryName: string;
         } => candidate !== null,
       );
 
@@ -136,6 +143,7 @@ export class NewsArticlesService {
       candidates.map((candidate) => candidate.url),
     );
     const existingUrls = new Set(existing.map((article) => article.url));
+    const categoryCache = new Map<string, string | null>();
 
     for (const candidate of candidates) {
       if (existingUrls.has(candidate.url)) {
@@ -144,16 +152,25 @@ export class NewsArticlesService {
       }
 
       try {
+        const category = await this.resolveRssCategory(
+          candidate.categoryName,
+          feed.fallbackCategory,
+          categoryCache,
+        );
+        if (!category) {
+          skipped++;
+          continue;
+        }
+
         await this.newsArticleRepository.create({
           title: candidate.title,
           summary: candidate.summary,
           url: candidate.url,
-          category: feed.defaultCategory,
+          category,
           coverImage: candidate.coverImage,
           publishedAt: candidate.publishedAt,
           sourceId: feed.id,
           sourceName: feed.name,
-          coverColor: feed.coverColor,
         });
         existingUrls.add(candidate.url);
         added++;
@@ -171,6 +188,36 @@ export class NewsArticlesService {
     skipped += parsed.items.length - candidates.length;
 
     return { source: feed.name, added, skipped };
+  }
+
+  /**
+   * 解析 RSS 分类：优先三方名；若该分类已软删则改用 fallback；
+   * fallback 也被软删则返回 null（跳过该条）。
+   */
+  private async resolveRssCategory(
+    preferred: string,
+    fallback: string,
+    cache: Map<string, string | null>,
+  ): Promise<string | null> {
+    const resolveOne = async (name: string): Promise<string | null> => {
+      if (cache.has(name)) {
+        return cache.get(name) ?? null;
+      }
+      const resolved = await this.newsCategoriesService.ensureByName(name);
+      cache.set(name, resolved);
+      return resolved;
+    };
+
+    const primary = await resolveOne(preferred);
+    if (primary) {
+      return primary;
+    }
+
+    if (preferred.trim() === fallback.trim()) {
+      return null;
+    }
+
+    return resolveOne(fallback);
   }
 
   private isUniqueViolation(error: unknown): boolean {
@@ -197,6 +244,17 @@ export class NewsArticlesService {
     );
   }
 
+  private extractCategory(item: RssItem): string | undefined {
+    const fromList = item.categories
+      ?.map((value) => value?.trim())
+      .find((value) => !!value);
+    if (fromList) {
+      return fromList;
+    }
+
+    return undefined;
+  }
+
   private extractImage(item: RssItem): string | undefined {
     const enclosureUrl = item.enclosure?.url;
     if (enclosureUrl) {
@@ -213,9 +271,11 @@ export class NewsArticlesService {
   findPage({
     paginationOptions,
     category,
+    deletedStatus = DeletedStatus.All,
   }: {
     paginationOptions: IPaginationOptions;
     category?: string;
+    deletedStatus?: DeletedStatus;
   }) {
     return this.newsArticleRepository.findPage({
       paginationOptions: {
@@ -223,15 +283,21 @@ export class NewsArticlesService {
         limit: paginationOptions.limit,
       },
       category,
+      deletedStatus,
     });
   }
 
-  findCategories() {
-    return this.newsArticleRepository.findCategories();
+  findCategories(): Promise<NewsCategory[]> {
+    return this.newsCategoriesService.findAllActive();
   }
 
   findById(id: NewsArticle['id']) {
     return this.newsArticleRepository.findById(id);
+  }
+
+  async findPublicById(id: NewsArticle['id']) {
+    const article = await this.newsArticleRepository.findById(id);
+    return article?.deletedAt ? null : article;
   }
 
   findByIds(ids: NewsArticle['id'][]) {
@@ -240,16 +306,20 @@ export class NewsArticlesService {
 
   async update(
     id: NewsArticle['id'],
-
     updateNewsArticleDto: UpdateNewsArticleDto,
   ) {
+    let category = updateNewsArticleDto.category;
+    if (category !== undefined) {
+      category =
+        await this.newsCategoriesService.assertCategoryNameExists(category);
+    }
+
     return this.newsArticleRepository.update(id, {
-      coverColor: updateNewsArticleDto.coverColor,
       sourceName: updateNewsArticleDto.sourceName,
       sourceId: updateNewsArticleDto.sourceId,
       publishedAt: updateNewsArticleDto.publishedAt,
       coverImage: updateNewsArticleDto.coverImage,
-      category: updateNewsArticleDto.category,
+      category,
       url: updateNewsArticleDto.url,
       summary: updateNewsArticleDto.summary,
       title: updateNewsArticleDto.title,
@@ -258,5 +328,13 @@ export class NewsArticlesService {
 
   remove(id: NewsArticle['id']) {
     return this.newsArticleRepository.remove(id);
+  }
+
+  async restore(id: NewsArticle['id']) {
+    const restored = await this.newsArticleRepository.restore(id);
+    if (!restored) {
+      throw new NotFoundException();
+    }
+    return restored;
   }
 }

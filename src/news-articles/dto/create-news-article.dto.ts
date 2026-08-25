@@ -23,13 +23,6 @@ export class CreateNewsArticleDto {
     type: () => String,
   })
   @IsString()
-  coverColor: string;
-
-  @ApiProperty({
-    required: true,
-    type: () => String,
-  })
-  @IsString()
   sourceName: string;
 
   @ApiProperty({

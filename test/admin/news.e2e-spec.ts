@@ -48,12 +48,12 @@ describe('News Module', () => {
         .get('/api/v1/news/categories')
         .expect(200);
 
-      const categories = categoriesBody.data as string[];
+      const categories = categoriesBody.data as Array<{ name: string }>;
       if (!categories.length) {
         return;
       }
 
-      const category = categories[0];
+      const category = categories[0].name;
       const { body } = await request(app)
         .get('/api/v1/news')
         .query({ category, limit: 10 })
@@ -61,6 +61,7 @@ describe('News Module', () => {
 
       for (const article of body.data.data) {
         expect(article.category).toBe(category);
+        expect(article.coverColor).toBeUndefined();
       }
     });
   });
@@ -73,6 +74,15 @@ describe('News Module', () => {
         .expect(({ body }) => {
           expect(body.code).toBe(200);
           expect(body.data).toBeInstanceOf(Array);
+          if (body.data.length) {
+            expect(body.data[0]).toEqual(
+              expect.objectContaining({
+                id: expect.any(String),
+                name: expect.any(String),
+                sortOrder: expect.any(Number),
+              }),
+            );
+          }
         });
     });
   });

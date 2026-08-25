@@ -16,5 +16,8 @@
   "roleNotExists": "الدور غير موجود",
   "statusNotExists": "الحالة غير موجودة",
   "selectFile": "يرجى اختيار ملف",
-  "internalServerError": "خطأ داخلي في الخادم"
+  "internalServerError": "خطأ داخلي في الخادم",
+  "categoryNotExists": "News category does not exist",
+  "categoryNameExists": "News category name already exists",
+  "categoryNameRequired": "News category name is required"
 }

@@ -5,12 +5,6 @@ export class NewsArticle {
     type: () => String,
     nullable: false,
   })
-  coverColor: string;
-
-  @ApiProperty({
-    type: () => String,
-    nullable: false,
-  })
   sourceName: string;
 
   @ApiProperty({
@@ -66,4 +60,10 @@ export class NewsArticle {
 
   @ApiProperty()
   updatedAt: Date;
+
+  @ApiProperty({
+    nullable: true,
+    required: false,
+  })
+  deletedAt?: Date | null;
 }

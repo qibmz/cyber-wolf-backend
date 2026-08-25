@@ -27,6 +27,8 @@ import { FetchResult } from './news-articles.service';
 import { Roles } from '../roles/roles.decorator';
 import { RoleEnum } from '../roles/roles.enum';
 import { RolesGuard } from '../roles/roles.guard';
+import { NewsCategory } from '../news-categories/domain/news-category';
+import { DeletedStatus } from '../utils/types/deleted-status';
 
 @ApiTags('News')
 @Controller({
@@ -56,6 +58,7 @@ export class NewsArticlesController {
           limit,
         },
         category: query.category,
+        deletedStatus: DeletedStatus.NotDeleted,
       }),
     );
   }
@@ -74,10 +77,10 @@ export class NewsArticlesController {
 
   @Get('categories')
   @ApiOkResponse({
-    description: '返回已入库资讯的去重分类列表',
-    type: [String],
+    description: '返回启用中的资讯分类列表',
+    type: [NewsCategory],
   })
-  findCategories(): Promise<string[]> {
+  findCategories(): Promise<NewsCategory[]> {
     return this.newsArticlesService.findCategories();
   }
 
@@ -91,6 +94,6 @@ export class NewsArticlesController {
     type: NewsArticle,
   })
   findById(@Param('id') id: string) {
-    return this.newsArticlesService.findById(id);
+    return this.newsArticlesService.findPublicById(id);
   }
 }

@@ -22,10 +22,12 @@ import { SessionModule } from './session/session.module';
 import { MailerModule } from './mailer/mailer.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { NewsArticlesModule } from './news-articles/news-articles.module';
+import { NewsCategoriesModule } from './news-categories/news-categories.module';
 
 @Module({
   imports: [
     ScheduleModule.forRoot(),
+    NewsCategoriesModule,
     NewsArticlesModule,
     ConfigModule.forRoot({
       isGlobal: true,

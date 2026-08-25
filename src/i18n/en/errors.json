@@ -15,6 +15,9 @@
   "imageNotExists": "Image does not exist",
   "roleNotExists": "Role does not exist",
   "statusNotExists": "Status does not exist",
+  "categoryNotExists": "News category does not exist",
+  "categoryNameExists": "News category name already exists",
+  "categoryNameRequired": "News category name is required",
   "selectFile": "Please select a file",
   "internalServerError": "Internal server error"
 }

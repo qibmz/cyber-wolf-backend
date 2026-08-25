@@ -16,5 +16,8 @@
   "roleNotExists": "Le rôle n'existe pas",
   "statusNotExists": "Le statut n'existe pas",
   "selectFile": "Veuillez sélectionner un fichier",
-  "internalServerError": "Erreur interne du serveur"
+  "internalServerError": "Erreur interne du serveur",
+  "categoryNotExists": "News category does not exist",
+  "categoryNameExists": "News category name already exists",
+  "categoryNameRequired": "News category name is required"
 }

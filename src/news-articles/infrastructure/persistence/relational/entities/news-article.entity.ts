@@ -16,12 +16,6 @@ export class NewsArticleEntity extends EntityRelationalHelper {
     nullable: false,
     type: String,
   })
-  coverColor: string;
-
-  @Column({
-    nullable: false,
-    type: String,
-  })
   sourceName: string;
 
   @Column({
@@ -77,4 +71,11 @@ export class NewsArticleEntity extends EntityRelationalHelper {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @Index()
+  @Column({
+    nullable: true,
+    type: Date,
+  })
+  deletedAt?: Date | null;
 }

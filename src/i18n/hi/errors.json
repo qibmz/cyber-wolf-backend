@@ -16,5 +16,8 @@
   "roleNotExists": "भूमिका मौजूद नहीं है",
   "statusNotExists": "स्थिति मौजूद नहीं है",
   "selectFile": "कृपया फ़ाइल चुनें",
-  "internalServerError": "आंतरिक सर्वर त्रुटि"
+  "internalServerError": "आंतरिक सर्वर त्रुटि",
+  "categoryNotExists": "News category does not exist",
+  "categoryNameExists": "News category name already exists",
+  "categoryNameRequired": "News category name is required"
 }

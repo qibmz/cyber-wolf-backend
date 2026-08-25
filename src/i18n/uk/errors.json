@@ -16,5 +16,8 @@
   "roleNotExists": "Роль не існує",
   "statusNotExists": "Статус не існує",
   "selectFile": "Будь ласка, виберіть файл",
-  "internalServerError": "Внутрішня помилка сервера"
+  "internalServerError": "Внутрішня помилка сервера",
+  "categoryNotExists": "News category does not exist",
+  "categoryNameExists": "News category name already exists",
+  "categoryNameRequired": "News category name is required"
 }
