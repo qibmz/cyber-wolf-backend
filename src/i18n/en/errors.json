@@ -19,5 +19,8 @@
   "categoryNameExists": "News category name already exists",
   "categoryNameRequired": "News category name is required",
   "selectFile": "Please select a file",
-  "internalServerError": "Internal server error"
+  "internalServerError": "Internal server error",
+  "invalidSignature": "Invalid wallet signature",
+  "nonceExpired": "Nonce expired or invalid. Please retry",
+  "walletAlreadyBound": "Wallet already bound to another account"
 }

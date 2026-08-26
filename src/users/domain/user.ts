@@ -6,6 +6,12 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class User {
   @ApiProperty({
+    type: () => String,
+    nullable: true,
+  })
+  walletAddress?: string | null;
+
+  @ApiProperty({
     type: String,
     example: 'wolf-dev',
     nullable: true,

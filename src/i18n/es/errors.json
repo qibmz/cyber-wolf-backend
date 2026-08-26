@@ -19,5 +19,8 @@
   "internalServerError": "Error interno del servidor",
   "categoryNotExists": "News category does not exist",
   "categoryNameExists": "News category name already exists",
-  "categoryNameRequired": "News category name is required"
+  "categoryNameRequired": "News category name is required",
+  "invalidSignature": "Firma de cartera no válida",
+  "nonceExpired": "Nonce caducado o no válido. Reintenta",
+  "walletAlreadyBound": "La cartera ya está vinculada a otra cuenta"
 }

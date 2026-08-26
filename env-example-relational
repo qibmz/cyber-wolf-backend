@@ -67,6 +67,13 @@ FACEBOOK_APP_SECRET=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 
+# Web3 wallet login (SIWE / EIP-4361)
+# WALLET_DOMAIN must equal the frontend's SIWE `domain`, i.e. window.location.host (host[:port], NO scheme).
+# Set it to your real frontend host in production (e.g. app.example.com); if unset, domain is not verified.
+WALLET_DOMAIN=localhost:3000
+# Nonce validity window in milliseconds (default 5 minutes)
+WALLET_NONCE_TTL=300000
+
 APPLE_APP_AUDIENCE=[]
 
 WORKER_HOST=redis://redis:6379/1

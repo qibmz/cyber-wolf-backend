@@ -19,5 +19,8 @@
   "internalServerError": "Внутрішня помилка сервера",
   "categoryNotExists": "News category does not exist",
   "categoryNameExists": "News category name already exists",
-  "categoryNameRequired": "News category name is required"
+  "categoryNameRequired": "News category name is required",
+  "invalidSignature": "Недійсний підпис гаманця",
+  "nonceExpired": "Nonce прострочено або недійсний. Спробуйте ще раз",
+  "walletAlreadyBound": "Гаманець уже прив’язано до іншого облікового запису"
 }

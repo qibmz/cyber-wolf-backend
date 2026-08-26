@@ -19,5 +19,8 @@
   "internalServerError": "خطأ داخلي في الخادم",
   "categoryNotExists": "News category does not exist",
   "categoryNameExists": "News category name already exists",
-  "categoryNameRequired": "News category name is required"
+  "categoryNameRequired": "News category name is required",
+  "invalidSignature": "توقيع المحفظة غير صالح",
+  "nonceExpired": "انتهت صلاحية nonce أو غير صالح. أعد المحاولة",
+  "walletAlreadyBound": "المحفظة مرتبطة بالفعل بحساب آخر"
 }

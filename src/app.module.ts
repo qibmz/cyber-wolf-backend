@@ -8,10 +8,12 @@ import appConfig from './config/app.config';
 import mailConfig from './mail/config/mail.config';
 import fileConfig from './files/config/file.config';
 import googleConfig from './auth-google/config/google.config';
+import walletConfig from './auth-wallet/config/wallet.config';
 import path from 'path';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthGoogleModule } from './auth-google/auth-google.module';
+import { AuthWalletModule } from './auth-wallet/auth-wallet.module';
 import { HeaderResolver, I18nModule } from 'nestjs-i18n';
 import { TypeOrmConfigService } from './database/typeorm-config.service';
 import { MailModule } from './mail/mail.module';
@@ -38,6 +40,7 @@ import { NewsCategoriesModule } from './news-categories/news-categories.module';
         mailConfig,
         fileConfig,
         googleConfig,
+        walletConfig,
       ],
       envFilePath: ['.env'],
     }),
@@ -74,6 +77,7 @@ import { NewsCategoriesModule } from './news-categories/news-categories.module';
     FilesModule,
     AuthModule,
     AuthGoogleModule,
+    AuthWalletModule,
     SessionModule,
     MailModule,
     MailerModule,

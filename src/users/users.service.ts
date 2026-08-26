@@ -133,6 +133,8 @@ export class UsersService {
     return this.usersRepository.create({
       // Do not remove comment below.
       // <creating-property-payload />
+      walletAddress: createUserDto.walletAddress,
+
       ...(nickname ? { nickname } : {}),
       email: email,
       password: password,
@@ -174,6 +176,12 @@ export class UsersService {
 
   findByNickname(nickname: User['nickname']): Promise<NullableType<User>> {
     return this.usersRepository.findByNickname(nickname);
+  }
+
+  findByWalletAddress(
+    walletAddress: User['walletAddress'],
+  ): Promise<NullableType<User>> {
+    return this.usersRepository.findByWalletAddress(walletAddress);
   }
 
   findBySocialIdAndProvider({
@@ -311,6 +319,8 @@ export class UsersService {
     return this.usersRepository.update(id, {
       // Do not remove comment below.
       // <updating-property-payload />
+      walletAddress: updateUserDto.walletAddress,
+
       nickname,
 
       email,

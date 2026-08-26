@@ -9,6 +9,8 @@ import { UserEntity } from '../entities/user.entity';
 export class UserMapper {
   static toDomain(raw: UserEntity): User {
     const domainEntity = new User();
+    domainEntity.walletAddress = raw.walletAddress;
+
     domainEntity.nickname = raw.nickname;
 
     domainEntity.id = raw.id;
@@ -53,6 +55,8 @@ export class UserMapper {
     }
 
     const persistenceEntity = new UserEntity();
+    persistenceEntity.walletAddress = domainEntity.walletAddress;
+
     persistenceEntity.nickname = domainEntity.nickname;
 
     if (domainEntity.id && typeof domainEntity.id === 'number') {

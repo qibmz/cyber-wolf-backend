@@ -27,6 +27,9 @@ export abstract class UserRepository {
   abstract findByNickname(
     nickname: User['nickname'],
   ): Promise<NullableType<User>>;
+  abstract findByWalletAddress(
+    walletAddress: User['walletAddress'],
+  ): Promise<NullableType<User>>;
   abstract findBySocialIdAndProvider({
     socialId,
     provider,

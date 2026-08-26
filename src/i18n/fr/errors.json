@@ -19,5 +19,8 @@
   "internalServerError": "Erreur interne du serveur",
   "categoryNotExists": "News category does not exist",
   "categoryNameExists": "News category name already exists",
-  "categoryNameRequired": "News category name is required"
+  "categoryNameRequired": "News category name is required",
+  "invalidSignature": "Signature de portefeuille invalide",
+  "nonceExpired": "Nonce expiré ou invalide. Réessayez",
+  "walletAlreadyBound": "Le portefeuille est déjà lié à un autre compte"
 }

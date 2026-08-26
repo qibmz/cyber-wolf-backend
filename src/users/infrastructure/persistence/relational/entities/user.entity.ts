@@ -21,6 +21,13 @@ import { EntityRelationalHelper } from '../../../../../utils/relational-entity-h
   name: 'user',
 })
 export class UserEntity extends EntityRelationalHelper {
+  @Index('IDX_user_wallet_address', { unique: true })
+  @Column({
+    nullable: true,
+    type: String,
+  })
+  walletAddress?: string | null;
+
   @Column({ type: String, unique: true, nullable: true })
   nickname?: string | null;
 

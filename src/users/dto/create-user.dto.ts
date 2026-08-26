@@ -19,6 +19,14 @@ import { StatusDto } from '../../statuses/dto/status.dto';
 import { lowerCaseTransformer } from '../../utils/transformers/lower-case.transformer';
 
 export class CreateUserDto {
+  @ApiProperty({
+    required: false,
+    type: () => String,
+  })
+  @IsOptional()
+  @IsString()
+  walletAddress?: string | null;
+
   @ApiPropertyOptional({ example: 'wolf-dev', type: String })
   @Transform(lowerCaseTransformer)
   @IsOptional()

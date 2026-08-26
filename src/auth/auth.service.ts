@@ -48,12 +48,6 @@ export class AuthService {
       });
     }
 
-    if (user.provider !== AuthProvidersEnum.email) {
-      throw this.invalidLoginException({
-        email: `needLoginViaProvider:${user.provider}`,
-      });
-    }
-
     if (!user.password) {
       throw this.invalidLoginException({
         password: 'incorrectPassword',
@@ -71,29 +65,7 @@ export class AuthService {
       });
     }
 
-    const hash = crypto
-      .createHash('sha256')
-      .update(randomStringGenerator())
-      .digest('hex');
-
-    const session = await this.sessionService.create({
-      user,
-      hash,
-    });
-
-    const { token, refreshToken, tokenExpires } = await this.getTokensData({
-      id: user.id,
-      role: user.role,
-      sessionId: session.id,
-      hash,
-    });
-
-    return {
-      refreshToken,
-      token,
-      tokenExpires,
-      user,
-    };
+    return this.createSessionAndTokens(user);
   }
 
   async validateSocialLogin(
@@ -167,33 +139,7 @@ export class AuthService {
       });
     }
 
-    const hash = crypto
-      .createHash('sha256')
-      .update(randomStringGenerator())
-      .digest('hex');
-
-    const session = await this.sessionService.create({
-      user,
-      hash,
-    });
-
-    const {
-      token: jwtToken,
-      refreshToken,
-      tokenExpires,
-    } = await this.getTokensData({
-      id: user.id,
-      role: user.role,
-      sessionId: session.id,
-      hash,
-    });
-
-    return {
-      refreshToken,
-      token: jwtToken,
-      tokenExpires,
-      user,
-    };
+    return this.createSessionAndTokens(user);
   }
 
   async register(dto: AuthRegisterLoginDto): Promise<void> {
@@ -566,6 +512,79 @@ export class AuthService {
     return this.sessionService.deleteById(data.sessionId);
   }
 
+  async loginWithWallet(walletAddress: string): Promise<LoginResponseDto> {
+    const normalizedAddress = walletAddress.toLowerCase();
+
+    let user = await this.usersService.findByWalletAddress(normalizedAddress);
+
+    if (!user) {
+      const role = {
+        id: RoleEnum.user,
+      };
+      const status = {
+        id: StatusEnum.active,
+      };
+
+      user = await this.usersService.create({
+        email: null,
+        nickname: null,
+        walletAddress: normalizedAddress,
+        provider: AuthProvidersEnum.wallet,
+        role,
+        status,
+      });
+
+      user = await this.usersService.findById(user.id);
+    }
+
+    if (!user) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          user: 'userNotFound',
+        },
+      });
+    }
+
+    return this.createSessionAndTokens(user);
+  }
+
+  async bindWallet(
+    userId: User['id'],
+    walletAddress: string,
+  ): Promise<NullableType<User>> {
+    const normalizedAddress = walletAddress.toLowerCase();
+
+    const existing =
+      await this.usersService.findByWalletAddress(normalizedAddress);
+
+    if (existing && existing.id !== userId) {
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          walletAddress: 'walletAlreadyBound',
+        },
+      });
+    }
+
+    return this.usersService.update(userId, {
+      walletAddress: normalizedAddress,
+    });
+  }
+
+  async bindEmail(
+    userId: User['id'],
+    email: string,
+    password?: string,
+  ): Promise<NullableType<User>> {
+    const normalizedEmail = email.toLowerCase();
+
+    return this.usersService.update(userId, {
+      email: normalizedEmail,
+      ...(password ? { password } : {}),
+    });
+  }
+
   private invalidLoginException(
     errors: Record<string, string>,
   ): UnprocessableEntityException {
@@ -593,6 +612,32 @@ export class AuthService {
     });
 
     return `${forgotSecret}${user.password ?? ''}`;
+  }
+
+  private async createSessionAndTokens(user: User): Promise<LoginResponseDto> {
+    const hash = crypto
+      .createHash('sha256')
+      .update(randomStringGenerator())
+      .digest('hex');
+
+    const session = await this.sessionService.create({
+      user,
+      hash,
+    });
+
+    const { token, refreshToken, tokenExpires } = await this.getTokensData({
+      id: user.id,
+      role: user.role,
+      sessionId: session.id,
+      hash,
+    });
+
+    return {
+      refreshToken,
+      token,
+      tokenExpires,
+      user,
+    };
   }
 
   private async getTokensData(data: {

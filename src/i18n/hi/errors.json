@@ -19,5 +19,8 @@
   "internalServerError": "आंतरिक सर्वर त्रुटि",
   "categoryNotExists": "News category does not exist",
   "categoryNameExists": "News category name already exists",
-  "categoryNameRequired": "News category name is required"
+  "categoryNameRequired": "News category name is required",
+  "invalidSignature": "अमान्य वॉलेट हस्ताक्षर",
+  "nonceExpired": "nonce समाप्त या अमान्य। कृपया फिर प्रयास करें",
+  "walletAlreadyBound": "वॉलेट पहले से किसी अन्य खाते से जुड़ा है"
 }
