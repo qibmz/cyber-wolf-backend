@@ -25,6 +25,13 @@ export class FindAllNewsArticlesDto {
   @IsString()
   @IsOptional()
   category?: string;
+
+  @ApiPropertyOptional({
+    description: '按分类 id 筛选（存在时优先于 category 名字）',
+  })
+  @IsString()
+  @IsOptional()
+  categoryId?: string;
 }
 
 /** 后台资讯列表查询 */

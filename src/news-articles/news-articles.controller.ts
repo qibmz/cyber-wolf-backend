@@ -58,6 +58,7 @@ export class NewsArticlesController {
           limit,
         },
         category: query.category,
+        categoryId: query.categoryId,
         deletedStatus: DeletedStatus.NotDeleted,
       }),
     );

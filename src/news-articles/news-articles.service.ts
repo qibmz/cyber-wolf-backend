@@ -268,21 +268,39 @@ export class NewsArticlesService {
     return media?.$?.url;
   }
 
-  findPage({
+  async findPage({
     paginationOptions,
     category,
+    categoryId,
     deletedStatus = DeletedStatus.All,
   }: {
     paginationOptions: IPaginationOptions;
     category?: string;
+    categoryId?: string;
     deletedStatus?: DeletedStatus;
   }) {
+    let effectiveCategory = category?.trim() || undefined;
+
+    // categoryId 优先：解析为分类名；分类不存在/已软删则返回空结果。
+    if (categoryId) {
+      const resolvedName =
+        await this.newsCategoriesService.getActiveNameById(categoryId);
+      if (!resolvedName) {
+        return {
+          data: [],
+          total: 0,
+          paginationOptions,
+        };
+      }
+      effectiveCategory = resolvedName;
+    }
+
     return this.newsArticleRepository.findPage({
       paginationOptions: {
         page: paginationOptions.page,
         limit: paginationOptions.limit,
       },
-      category,
+      category: effectiveCategory,
       deletedStatus,
     });
   }

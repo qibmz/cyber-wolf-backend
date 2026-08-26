@@ -64,6 +64,7 @@ export class NewsArticlesAdminController {
       await this.newsArticlesService.findPage({
         paginationOptions: { page, limit },
         category: query.category,
+        categoryId: query.categoryId,
         deletedStatus: query.deletedStatus ?? DeletedStatus.All,
       }),
     );

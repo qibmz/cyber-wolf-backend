@@ -67,6 +67,18 @@ export class NewsCategoriesService {
     return category;
   }
 
+  /**
+   * 公开查询用：按 id 解析分类名，仅保留未软删的分类。
+   * 返回 null 表示该分类不存在或已被软删（此时可按空结果处理）。
+   */
+  async getActiveNameById(id: NewsCategory['id']): Promise<string | null> {
+    const category = await this.newsCategoryRepository.findById(id);
+    if (!category || category.deletedAt) {
+      return null;
+    }
+    return category.name;
+  }
+
   async assertCategoryNameExists(name: string): Promise<string> {
     const trimmed = name.trim();
     const category = await this.newsCategoryRepository.findByName(trimmed);
