@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:17.9-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME:-root}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: cyber_wolf
+    volumes:
+      - cyber-wolf-pg:/var/lib/postgresql/data
+      - ./init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql:ro
+    networks:
+      - cyber-wolf
+    mem_limit: 384m
+
+networks:
+  cyber-wolf:
+    name: cyber-wolf
+    driver: bridge
+
+volumes:
+  cyber-wolf-pg:

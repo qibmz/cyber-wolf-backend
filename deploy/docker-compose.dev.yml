@@ -1,0 +1,15 @@
+services:
+  api:
+    image: ghcr.io/qibmz/cyber-wolf-backend:develop
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - '127.0.0.1:3002:3001'
+    networks:
+      - cyber-wolf
+    mem_limit: 512m
+
+networks:
+  cyber-wolf:
+    external: true
+    name: cyber-wolf
