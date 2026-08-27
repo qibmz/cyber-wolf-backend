@@ -1,5 +1,24 @@
 {
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
   "markdown.extension.toc.levels": "2..6",
   "markdown.extension.orderedList.autoRenumber": false,
-  "typescript.preferences.importModuleSpecifier": "relative"
+  "i18n-mage.i18nFeatures.framework": "none",
+  "i18n-mage.workspace.languagePath": "src/i18n",
+  "i18n-mage.workspace.ignoredPaths": [
+    "src/dist",
+    "dist",
+    "build",
+    "node_modules"
+  ],
+  "i18n-mage.i18nFeatures.namespaceStrategy": "full",
+  "i18n-mage.writeRules.indentType": "space",
+  "i18n-mage.writeRules.quoteStyleForKey": "double",
+  "i18n-mage.writeRules.quoteStyleForValue": "double",
+  "i18n-mage.writeRules.languageStructure": "flat"
 }
