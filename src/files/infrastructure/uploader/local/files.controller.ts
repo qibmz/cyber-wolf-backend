@@ -24,7 +24,7 @@ import { FileResponseDto } from './dto/file-response.dto';
 import type { Response as ExpressResponse } from 'express';
 import { ApiSuccessResponse } from '../../../../utils/dto/api-success-response.dto';
 
-@ApiTags('文件')
+@ApiTags('files')
 @Controller({
   path: 'files',
   version: '1',

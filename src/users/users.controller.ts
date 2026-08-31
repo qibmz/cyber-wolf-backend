@@ -41,7 +41,7 @@ import {
 @ApiBearerAuth()
 @Roles(RoleEnum.admin)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
-@ApiTags('用户')
+@ApiTags('users')
 @Controller({
   path: 'users',
   version: '1',

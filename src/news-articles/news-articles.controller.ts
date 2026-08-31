@@ -34,7 +34,7 @@ import {
   ApiSuccessResponse,
 } from '../utils/dto/api-success-response.dto';
 
-@ApiTags('资讯')
+@ApiTags('news')
 @Controller({
   path: 'news',
   version: '1',

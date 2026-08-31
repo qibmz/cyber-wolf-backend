@@ -19,7 +19,7 @@ import { FilesS3Service } from './files.service';
 import { FileResponseDto } from './dto/file-response.dto';
 import { ApiSuccessResponse } from '../../../../utils/dto/api-success-response.dto';
 
-@ApiTags('文件')
+@ApiTags('files')
 @Controller({
   path: 'files',
   version: '1',

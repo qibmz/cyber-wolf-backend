@@ -13,7 +13,7 @@ import { AuthGoogleLoginDto } from './dto/auth-google-login.dto';
 import { LoginResponseDto } from '../auth/dto/login-response.dto';
 import { ApiSuccessResponse } from '../utils/dto/api-success-response.dto';
 
-@ApiTags('认证')
+@ApiTags('auth')
 @Controller({
   path: 'auth/google',
   version: '1',

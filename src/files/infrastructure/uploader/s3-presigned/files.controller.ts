@@ -11,7 +11,7 @@ import { FileUploadDto } from './dto/file.dto';
 import { FileResponseDto } from './dto/file-response.dto';
 import { ApiSuccessResponse } from '../../../../utils/dto/api-success-response.dto';
 
-@ApiTags('文件')
+@ApiTags('files')
 @Controller({
   path: 'files',
   version: '1',

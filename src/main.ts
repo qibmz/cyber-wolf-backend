@@ -71,7 +71,19 @@ async function bootstrap() {
     }),
   );
 
-  const options = new DocumentBuilder()
+  // OpenAPI Tag：name 用英文稳定标识（Orval 分组/文件名），description 用中文说明（Swagger UI 展示）
+  const apiTags: { name: string; description: string }[] = [
+    { name: 'home', description: '首页' },
+    { name: 'auth', description: '认证' },
+    { name: 'users', description: '用户' },
+    { name: 'files', description: '文件' },
+    { name: 'news', description: '资讯' },
+    { name: 'markets', description: '行情' },
+    { name: 'admin-news', description: '后台-资讯' },
+    { name: 'admin-news-categories', description: '后台-资讯分类' },
+  ];
+
+  const documentBuilder = new DocumentBuilder()
     .setTitle('Cyber Wolf API')
     .setDescription('接口文档（成功响应经全局包装为 { code, msg, data }）')
     .setVersion('1.0')
@@ -83,10 +95,13 @@ async function bootstrap() {
       schema: {
         example: 'en',
       },
-    })
-    .build();
+    });
 
-  const document = SwaggerModule.createDocument(app, options);
+  for (const tag of apiTags) {
+    documentBuilder.addTag(tag.name, tag.description);
+  }
+
+  const document = SwaggerModule.createDocument(app, documentBuilder.build());
   SwaggerModule.setup('docs', app, document);
 
   await app.listen(configService.getOrThrow('app.port', { infer: true }));

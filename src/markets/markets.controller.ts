@@ -15,7 +15,7 @@ import { Market } from './domain/market';
 import { FindAllMarketsDto } from './dto/find-all-markets.dto';
 import { MarketsService } from './markets.service';
 
-@ApiTags('行情')
+@ApiTags('markets')
 @Controller({
   path: 'markets',
   version: '1',

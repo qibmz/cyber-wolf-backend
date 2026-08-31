@@ -26,7 +26,7 @@ import type { JwtPayloadType } from '../auth/strategies/types/jwt-payload.type';
 import type { RequestWithUser } from '../utils/types/request-with-user.type';
 import { ApiSuccessResponse } from '../utils/dto/api-success-response.dto';
 
-@ApiTags('认证')
+@ApiTags('auth')
 @Controller({
   path: 'auth/wallet',
   version: '1',

@@ -4,7 +4,7 @@ import { ApiSuccessResponse } from '../utils/dto/api-success-response.dto';
 import { AppInfoDto } from './dto/app-info.dto';
 import { HomeService } from './home.service';
 
-@ApiTags('首页')
+@ApiTags('home')
 @Controller()
 export class HomeController {
   constructor(private readonly service: HomeService) {}

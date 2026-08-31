@@ -36,7 +36,7 @@ import {
   ApiSuccessResponse,
 } from '../utils/dto/api-success-response.dto';
 
-@ApiTags('后台-资讯')
+@ApiTags('admin-news')
 @ApiBearerAuth()
 @Roles(RoleEnum.admin)
 @UseGuards(AuthGuard('jwt'), RolesGuard)

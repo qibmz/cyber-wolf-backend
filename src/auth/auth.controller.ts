@@ -34,7 +34,7 @@ import type { JwtPayloadType } from './strategies/types/jwt-payload.type';
 import type { JwtRefreshPayloadType } from './strategies/types/jwt-refresh-payload.type';
 import { ApiSuccessResponse } from '../utils/dto/api-success-response.dto';
 
-@ApiTags('认证')
+@ApiTags('auth')
 @Controller({
   path: 'auth',
   version: '1',
