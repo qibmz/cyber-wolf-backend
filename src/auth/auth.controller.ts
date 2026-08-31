@@ -12,7 +12,12 @@ import {
   SerializeOptions,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthEmailLoginDto } from './dto/auth-email-login.dto';
 import { AuthForgotPasswordDto } from './dto/auth-forgot-password.dto';
 import { AuthConfirmEmailDto } from './dto/auth-confirm-email.dto';
@@ -27,8 +32,9 @@ import { RefreshResponseDto } from './dto/refresh-response.dto';
 import type { RequestWithUser } from '../utils/types/request-with-user.type';
 import type { JwtPayloadType } from './strategies/types/jwt-payload.type';
 import type { JwtRefreshPayloadType } from './strategies/types/jwt-refresh-payload.type';
+import { ApiSuccessResponse } from '../utils/dto/api-success-response.dto';
 
-@ApiTags('Auth')
+@ApiTags('认证')
 @Controller({
   path: 'auth',
   version: '1',
@@ -40,21 +46,22 @@ export class AuthController {
     groups: ['me'],
   })
   @Post('email/login')
-  @ApiOkResponse({
-    type: LoginResponseDto,
-  })
+  @ApiOperation({ summary: '邮箱登录' })
+  @ApiOkResponse({ type: ApiSuccessResponse(LoginResponseDto) })
   @HttpCode(HttpStatus.OK)
   public login(@Body() loginDto: AuthEmailLoginDto): Promise<LoginResponseDto> {
     return this.service.validateLogin(loginDto);
   }
 
   @Post('email/register')
+  @ApiOperation({ summary: '邮箱注册' })
   @HttpCode(HttpStatus.NO_CONTENT)
   async register(@Body() createUserDto: AuthRegisterLoginDto): Promise<void> {
     return this.service.register(createUserDto);
   }
 
   @Post('email/confirm')
+  @ApiOperation({ summary: '确认邮箱' })
   @HttpCode(HttpStatus.NO_CONTENT)
   async confirmEmail(
     @Body() confirmEmailDto: AuthConfirmEmailDto,
@@ -63,6 +70,7 @@ export class AuthController {
   }
 
   @Post('email/confirm/new')
+  @ApiOperation({ summary: '确认新邮箱' })
   @HttpCode(HttpStatus.NO_CONTENT)
   async confirmNewEmail(
     @Body() confirmEmailDto: AuthConfirmEmailDto,
@@ -71,6 +79,7 @@ export class AuthController {
   }
 
   @Post('forgot/password')
+  @ApiOperation({ summary: '忘记密码' })
   @HttpCode(HttpStatus.NO_CONTENT)
   async forgotPassword(
     @Body() forgotPasswordDto: AuthForgotPasswordDto,
@@ -79,6 +88,7 @@ export class AuthController {
   }
 
   @Post('reset/password')
+  @ApiOperation({ summary: '重置密码' })
   @HttpCode(HttpStatus.NO_CONTENT)
   resetPassword(@Body() resetPasswordDto: AuthResetPasswordDto): Promise<void> {
     return this.service.resetPassword(
@@ -93,8 +103,9 @@ export class AuthController {
   })
   @Get('me')
   @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({ summary: '当前用户信息' })
   @ApiOkResponse({
-    type: User,
+    type: ApiSuccessResponse(User, { nullable: true }),
   })
   @HttpCode(HttpStatus.OK)
   public me(
@@ -104,13 +115,12 @@ export class AuthController {
   }
 
   @ApiBearerAuth()
-  @ApiOkResponse({
-    type: RefreshResponseDto,
-  })
+  @ApiOkResponse({ type: ApiSuccessResponse(RefreshResponseDto) })
   @SerializeOptions({
     groups: ['me'],
   })
   @Post('refresh')
+  @ApiOperation({ summary: '刷新令牌' })
   @UseGuards(AuthGuard('jwt-refresh'))
   @HttpCode(HttpStatus.OK)
   public refresh(
@@ -124,6 +134,7 @@ export class AuthController {
 
   @ApiBearerAuth()
   @Post('logout')
+  @ApiOperation({ summary: '退出登录' })
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.NO_CONTENT)
   public async logout(
@@ -139,10 +150,11 @@ export class AuthController {
     groups: ['me'],
   })
   @Patch('me')
+  @ApiOperation({ summary: '更新当前用户' })
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
-    type: User,
+    type: ApiSuccessResponse(User, { nullable: true }),
   })
   public update(
     @Request() request: RequestWithUser<JwtPayloadType>,
@@ -153,6 +165,7 @@ export class AuthController {
 
   @ApiBearerAuth()
   @Delete('me')
+  @ApiOperation({ summary: '删除当前用户' })
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.NO_CONTENT)
   public async delete(

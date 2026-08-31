@@ -1,15 +1,18 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiSuccessResponse } from '../utils/dto/api-success-response.dto';
+import { AppInfoDto } from './dto/app-info.dto';
 import { HomeService } from './home.service';
 
-@ApiTags('Home')
+@ApiTags('首页')
 @Controller()
 export class HomeController {
   constructor(private readonly service: HomeService) {}
 
   @Get()
-  appInfo() {
+  @ApiOperation({ summary: '应用信息' })
+  @ApiOkResponse({ type: ApiSuccessResponse(AppInfoDto) })
+  appInfo(): AppInfoDto {
     return this.service.appInfo();
   }
 }

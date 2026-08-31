@@ -15,14 +15,16 @@ import {
   ApiConsumes,
   ApiCreatedResponse,
   ApiExcludeEndpoint,
+  ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { FilesLocalService } from './files.service';
 import { FileResponseDto } from './dto/file-response.dto';
 import type { Response as ExpressResponse } from 'express';
+import { ApiSuccessResponse } from '../../../../utils/dto/api-success-response.dto';
 
-@ApiTags('Files')
+@ApiTags('文件')
 @Controller({
   path: 'files',
   version: '1',
@@ -31,11 +33,12 @@ export class FilesLocalController {
   constructor(private readonly filesService: FilesLocalService) {}
 
   @ApiCreatedResponse({
-    type: FileResponseDto,
+    type: ApiSuccessResponse(FileResponseDto, { codeExample: 201 }),
   })
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @Post('upload')
+  @ApiOperation({ summary: '上传文件（本地）' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {

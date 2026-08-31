@@ -9,7 +9,12 @@ import {
   SerializeOptions,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { LoginResponseDto } from '../auth/dto/login-response.dto';
 import { User } from '../users/domain/user';
@@ -19,8 +24,9 @@ import { AuthWalletBindEmailDto } from './dto/auth-wallet-bind-email.dto';
 import { AuthWalletNonceResponseDto } from './dto/auth-wallet-nonce-response.dto';
 import type { JwtPayloadType } from '../auth/strategies/types/jwt-payload.type';
 import type { RequestWithUser } from '../utils/types/request-with-user.type';
+import { ApiSuccessResponse } from '../utils/dto/api-success-response.dto';
 
-@ApiTags('Auth')
+@ApiTags('认证')
 @Controller({
   path: 'auth/wallet',
   version: '1',
@@ -30,9 +36,8 @@ export class AuthWalletController {
 
   @Get('nonce')
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({
-    type: AuthWalletNonceResponseDto,
-  })
+  @ApiOperation({ summary: '获取钱包登录 nonce' })
+  @ApiOkResponse({ type: ApiSuccessResponse(AuthWalletNonceResponseDto) })
   nonce(): AuthWalletNonceResponseDto {
     return this.authWalletService.getNonce();
   }
@@ -42,9 +47,8 @@ export class AuthWalletController {
   @SerializeOptions({
     groups: ['me'],
   })
-  @ApiOkResponse({
-    type: LoginResponseDto,
-  })
+  @ApiOperation({ summary: '钱包登录' })
+  @ApiOkResponse({ type: ApiSuccessResponse(LoginResponseDto) })
   login(@Body() loginDto: AuthWalletLoginDto): Promise<LoginResponseDto> {
     return this.authWalletService.login(loginDto);
   }
@@ -56,8 +60,9 @@ export class AuthWalletController {
   @SerializeOptions({
     groups: ['me'],
   })
+  @ApiOperation({ summary: '绑定钱包' })
   @ApiOkResponse({
-    type: User,
+    type: ApiSuccessResponse(User, { nullable: true }),
   })
   bind(
     @Request() request: RequestWithUser<JwtPayloadType>,
@@ -73,8 +78,9 @@ export class AuthWalletController {
   @SerializeOptions({
     groups: ['me'],
   })
+  @ApiOperation({ summary: '钱包账号绑定邮箱' })
   @ApiOkResponse({
-    type: User,
+    type: ApiSuccessResponse(User, { nullable: true }),
   })
   bindEmail(
     @Request() request: RequestWithUser<JwtPayloadType>,

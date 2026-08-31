@@ -72,8 +72,8 @@ async function bootstrap() {
   );
 
   const options = new DocumentBuilder()
-    .setTitle('API')
-    .setDescription('API docs')
+    .setTitle('Cyber Wolf API')
+    .setDescription('接口文档（成功响应经全局包装为 { code, msg, data }）')
     .setVersion('1.0')
     .addBearerAuth()
     .addGlobalParameters({
