@@ -25,6 +25,8 @@ import { MailerModule } from './mailer/mailer.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { NewsArticlesModule } from './news-articles/news-articles.module';
 import { NewsCategoriesModule } from './news-categories/news-categories.module';
+import { MarketsModule } from './markets/markets.module';
+import marketsConfig from './markets/config/markets.config';
 import observeConfig from './observe/config/observe.config';
 import { ObserveModule } from './observe/observe.setup';
 
@@ -59,6 +61,7 @@ const observeImports =
     ScheduleModule.forRoot(),
     NewsCategoriesModule,
     NewsArticlesModule,
+    MarketsModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [
@@ -69,6 +72,7 @@ const observeImports =
         fileConfig,
         googleConfig,
         walletConfig,
+        marketsConfig,
         observeConfig,
       ],
       envFilePath: ['.env'],

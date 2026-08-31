@@ -4,6 +4,7 @@ import { DatabaseConfig } from '../database/config/database-config.type';
 import { FileConfig } from '../files/config/file-config.type';
 import { GoogleConfig } from '../auth-google/config/google-config.type';
 import { MailConfig } from '../mail/config/mail-config.type';
+import { MarketsConfig } from '../markets/config/markets-config.type';
 import { WalletConfig } from '../auth-wallet/config/wallet-config.type';
 import { ObserveConfig } from '../observe/observe-config.type';
 
@@ -14,6 +15,7 @@ export type AllConfigType = {
   file: FileConfig;
   google: GoogleConfig;
   mail: MailConfig;
+  markets: MarketsConfig;
   observe: ObserveConfig;
   wallet: WalletConfig;
 };
