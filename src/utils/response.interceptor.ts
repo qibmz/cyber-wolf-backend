@@ -26,20 +26,22 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, unknown> {
     return next.handle().pipe(
       map((data) => {
         // 跳过不需要包装的响应：
-        // - 无返回体（204/文件下载等由 controller 直接发送的响应）
+        // - undefined（如 204 NO_CONTENT）
         // - 流式文件
         // - 响应已发送（避免二次写 body 报错）
+        // null 会包装为 { code, msg, data: null }，与详情「未找到」约定一致
         if (
           data === undefined ||
-          data === null ||
           data instanceof StreamableFile ||
           response.headersSent
         ) {
           return data;
         }
 
+        const statusCode = response.statusCode || HttpStatus.OK;
+
         return {
-          code: HttpStatus.OK,
+          code: statusCode,
           msg: 'success',
           data,
         };

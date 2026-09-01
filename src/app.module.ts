@@ -25,12 +25,43 @@ import { MailerModule } from './mailer/mailer.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { NewsArticlesModule } from './news-articles/news-articles.module';
 import { NewsCategoriesModule } from './news-categories/news-categories.module';
+import { MarketsModule } from './markets/markets.module';
+import marketsConfig from './markets/config/markets.config';
+import observeConfig from './observe/config/observe.config';
+import { isObserveEnabled } from './observe/observe-enabled';
+import { ObserveModule } from './observe/observe.setup';
+
+const observeImports = isObserveEnabled
+  ? [
+      ObserveModule.forRootAsync({
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (configService: ConfigService<AllConfigType>) => ({
+          appKey: configService.getOrThrow('observe.appKey', { infer: true }),
+          appSecret: configService.getOrThrow('observe.appSecret', {
+            infer: true,
+          }),
+          serviceId: configService.getOrThrow('observe.serviceId', {
+            infer: true,
+          }),
+          serviceVersion: configService.get('observe.serviceVersion', {
+            infer: true,
+          }),
+          tracesSampleRate: configService.getOrThrow(
+            'observe.tracesSampleRate',
+            { infer: true },
+          ),
+        }),
+      }),
+    ]
+  : [];
 
 @Module({
   imports: [
     ScheduleModule.forRoot(),
     NewsCategoriesModule,
     NewsArticlesModule,
+    MarketsModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [
@@ -41,9 +72,12 @@ import { NewsCategoriesModule } from './news-categories/news-categories.module';
         fileConfig,
         googleConfig,
         walletConfig,
+        marketsConfig,
+        observeConfig,
       ],
       envFilePath: ['.env'],
     }),
+    ...observeImports,
     TypeOrmModule.forRootAsync({
       useClass: TypeOrmConfigService,
       dataSourceFactory: async (options: DataSourceOptions) => {

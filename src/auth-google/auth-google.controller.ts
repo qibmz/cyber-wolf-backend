@@ -6,13 +6,14 @@ import {
   Post,
   SerializeOptions,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from '../auth/auth.service';
 import { AuthGoogleService } from './auth-google.service';
 import { AuthGoogleLoginDto } from './dto/auth-google-login.dto';
 import { LoginResponseDto } from '../auth/dto/login-response.dto';
+import { ApiSuccessResponse } from '../utils/dto/api-success-response.dto';
 
-@ApiTags('Auth')
+@ApiTags('auth')
 @Controller({
   path: 'auth/google',
   version: '1',
@@ -23,13 +24,12 @@ export class AuthGoogleController {
     private readonly authGoogleService: AuthGoogleService,
   ) {}
 
-  @ApiOkResponse({
-    type: LoginResponseDto,
-  })
+  @ApiOkResponse({ type: ApiSuccessResponse(LoginResponseDto) })
   @SerializeOptions({
     groups: ['me'],
   })
   @Post('login')
+  @ApiOperation({ summary: 'Google 登录' })
   @HttpCode(HttpStatus.OK)
   async login(@Body() loginDto: AuthGoogleLoginDto): Promise<LoginResponseDto> {
     const socialData = await this.authGoogleService.getProfileByToken(loginDto);

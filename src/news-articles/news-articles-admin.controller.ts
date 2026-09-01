@@ -15,6 +15,7 @@ import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
@@ -26,15 +27,16 @@ import { NewsArticle } from './domain/news-article';
 import { CreateNewsArticleDto } from './dto/create-news-article.dto';
 import { FindAllAdminNewsArticlesDto } from './dto/find-all-news-articles.dto';
 import { UpdateNewsArticleDto } from './dto/update-news-article.dto';
-import {
-  InfinityPaginationResponse,
-  InfinityPaginationResponseDto,
-} from '../utils/dto/infinity-pagination-response.dto';
+import { InfinityPaginationResponseDto } from '../utils/dto/infinity-pagination-response.dto';
 import { toInfinityPagination } from '../utils/infinity-pagination';
 import { DeletedStatus } from '../utils/types/deleted-status';
 import { NewsArticlesService } from './news-articles.service';
+import {
+  ApiSuccessPaginationResponse,
+  ApiSuccessResponse,
+} from '../utils/dto/api-success-response.dto';
 
-@ApiTags('Admin News')
+@ApiTags('admin-news')
 @ApiBearerAuth()
 @Roles(RoleEnum.admin)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -47,13 +49,17 @@ export class NewsArticlesAdminController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiCreatedResponse({ type: NewsArticle })
+  @ApiOperation({ summary: '创建资讯' })
+  @ApiCreatedResponse({
+    type: ApiSuccessResponse(NewsArticle, { codeExample: 201 }),
+  })
   create(@Body() payload: CreateNewsArticleDto): Promise<NewsArticle> {
     return this.newsArticlesService.create(payload);
   }
 
   @Get()
-  @ApiOkResponse({ type: InfinityPaginationResponse(NewsArticle) })
+  @ApiOperation({ summary: '资讯列表（后台）' })
+  @ApiOkResponse({ type: ApiSuccessPaginationResponse(NewsArticle) })
   async findAll(
     @Query() query: FindAllAdminNewsArticlesDto,
   ): Promise<InfinityPaginationResponseDto<NewsArticle>> {
@@ -71,27 +77,35 @@ export class NewsArticlesAdminController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: '资讯详情（后台）' })
   @ApiParam({ name: 'id', type: String })
-  @ApiOkResponse({ type: NewsArticle })
+  @ApiOkResponse({
+    type: ApiSuccessResponse(NewsArticle, { nullable: true }),
+  })
   findById(@Param('id') id: string) {
     return this.newsArticlesService.findById(id);
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: '更新资讯' })
   @ApiParam({ name: 'id', type: String })
-  @ApiOkResponse({ type: NewsArticle })
+  @ApiOkResponse({
+    type: ApiSuccessResponse(NewsArticle, { nullable: true }),
+  })
   update(@Param('id') id: string, @Body() payload: UpdateNewsArticleDto) {
     return this.newsArticlesService.update(id, payload);
   }
 
   @Patch(':id/restore')
+  @ApiOperation({ summary: '恢复资讯' })
   @ApiParam({ name: 'id', type: String })
-  @ApiOkResponse({ type: NewsArticle })
+  @ApiOkResponse({ type: ApiSuccessResponse(NewsArticle) })
   restore(@Param('id') id: string) {
     return this.newsArticlesService.restore(id);
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: '删除资讯' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiParam({ name: 'id', type: String })
   remove(@Param('id') id: string): Promise<void> {

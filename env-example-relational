@@ -40,6 +40,14 @@ R2_BUCKET_NAME=
 R2_PUBLIC_BASE_URL=
 R2_KEY_PREFIX=cyber-wolf
 
+# Markets (Binance USDT proxy, in-memory snapshot)
+BINANCE_BASE_URL=https://data-api.binance.vision
+COINGECKO_BASE_URL=https://api.coingecko.com
+# MARKETS_TICKER_INTERVAL_MS=10000
+# MARKETS_EXCHANGE_INFO_INTERVAL_MS=3600000
+# MARKETS_HTTP_TIMEOUT_MS=5000
+# MARKETS_LOGO_SYNC_BATCH_SIZE=20
+
 MAIL_HOST=maildev
 MAIL_PORT=1025
 MAIL_USER=
@@ -77,3 +85,12 @@ WALLET_NONCE_TTL=300000
 APPLE_APP_AUDIENCE=[]
 
 WORKER_HOST=redis://redis:6379/1
+
+# NestJS Observe (https://observe.nestjs.com) — optional telemetry
+# Set OBSERVE_ENABLED=true and keys from the Observe dashboard API Keys page.
+OBSERVE_ENABLED=false
+OBSERVE_APP_KEY=
+OBSERVE_APP_SECRET=
+OBSERVE_SERVICE_ID=cyber-wolf-api
+# OBSERVE_SERVICE_VERSION=git-sha-or-release-tag
+# OBSERVE_TRACES_SAMPLE_RATE=1

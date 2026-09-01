@@ -18,6 +18,7 @@ import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
@@ -25,21 +26,22 @@ import { Roles } from '../roles/roles.decorator';
 import { RoleEnum } from '../roles/roles.enum';
 import { AuthGuard } from '@nestjs/passport';
 
-import {
-  InfinityPaginationResponse,
-  InfinityPaginationResponseDto,
-} from '../utils/dto/infinity-pagination-response.dto';
+import { InfinityPaginationResponseDto } from '../utils/dto/infinity-pagination-response.dto';
 import { NullableType } from '../utils/types/nullable.type';
 import { QueryUserDto } from './dto/query-user.dto';
 import { User } from './domain/user';
 import { UsersService } from './users.service';
 import { RolesGuard } from '../roles/roles.guard';
 import { toInfinityPagination } from '../utils/infinity-pagination';
+import {
+  ApiSuccessPaginationResponse,
+  ApiSuccessResponse,
+} from '../utils/dto/api-success-response.dto';
 
 @ApiBearerAuth()
 @Roles(RoleEnum.admin)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
-@ApiTags('Users')
+@ApiTags('users')
 @Controller({
   path: 'users',
   version: '1',
@@ -47,25 +49,23 @@ import { toInfinityPagination } from '../utils/infinity-pagination';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @ApiCreatedResponse({
-    type: User,
-  })
+  @ApiCreatedResponse({ type: ApiSuccessResponse(User, { codeExample: 201 }) })
   @SerializeOptions({
     groups: ['admin'],
   })
   @Post()
+  @ApiOperation({ summary: '创建用户' })
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createProfileDto: CreateUserDto): Promise<User> {
     return this.usersService.create(createProfileDto);
   }
 
-  @ApiOkResponse({
-    type: InfinityPaginationResponse(User),
-  })
+  @ApiOkResponse({ type: ApiSuccessPaginationResponse(User) })
   @SerializeOptions({
     groups: ['admin'],
   })
   @Get()
+  @ApiOperation({ summary: '用户列表' })
   @HttpCode(HttpStatus.OK)
   async findAll(
     @Query() query: QueryUserDto,
@@ -89,12 +89,13 @@ export class UsersController {
   }
 
   @ApiOkResponse({
-    type: User,
+    type: ApiSuccessResponse(User, { nullable: true }),
   })
   @SerializeOptions({
     groups: ['admin'],
   })
   @Get(':id')
+  @ApiOperation({ summary: '用户详情' })
   @HttpCode(HttpStatus.OK)
   @ApiParam({
     name: 'id',
@@ -106,12 +107,13 @@ export class UsersController {
   }
 
   @ApiOkResponse({
-    type: User,
+    type: ApiSuccessResponse(User, { nullable: true }),
   })
   @SerializeOptions({
     groups: ['admin'],
   })
   @Patch(':id')
+  @ApiOperation({ summary: '更新用户' })
   @HttpCode(HttpStatus.OK)
   @ApiParam({
     name: 'id',
@@ -126,6 +128,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: '删除用户' })
   @ApiParam({
     name: 'id',
     type: String,
