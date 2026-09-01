@@ -16,13 +16,13 @@ import { AllConfigType } from './config/config.type';
 import { ResolvePromisesInterceptor } from './utils/serializer.interceptor';
 import { ResponseInterceptor } from './utils/response.interceptor';
 import { AllExceptionsFilter } from './utils/all-exceptions.filter';
+import { isObserveEnabled } from './observe/observe-enabled';
 import { ObserveInstrument } from './observe/observe.setup';
 
 async function bootstrap() {
-  const observeEnabled = process.env.OBSERVE_ENABLED === 'true';
   const app = await NestFactory.create(
     AppModule,
-    observeEnabled ? { instrument: ObserveInstrument } : undefined,
+    isObserveEnabled ? { instrument: ObserveInstrument } : undefined,
   );
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   const configService = app.get(ConfigService<AllConfigType>);

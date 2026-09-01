@@ -1,11 +1,12 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsInt, IsOptional, IsString, Min } from 'class-validator';
 
 export class FindAllMarketsDto {
   @ApiPropertyOptional({ description: '页码', example: 1, default: 1 })
   @Transform(({ value }) => (value ? Number(value) : 1))
-  @IsNumber()
+  @IsInt()
+  @Min(1)
   @IsOptional()
   page?: number;
 
@@ -15,7 +16,8 @@ export class FindAllMarketsDto {
     default: 10,
   })
   @Transform(({ value }) => (value ? Number(value) : 10))
-  @IsNumber()
+  @IsInt()
+  @Min(1)
   @IsOptional()
   limit?: number;
 

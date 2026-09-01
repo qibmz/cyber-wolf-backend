@@ -28,33 +28,33 @@ import { NewsCategoriesModule } from './news-categories/news-categories.module';
 import { MarketsModule } from './markets/markets.module';
 import marketsConfig from './markets/config/markets.config';
 import observeConfig from './observe/config/observe.config';
+import { isObserveEnabled } from './observe/observe-enabled';
 import { ObserveModule } from './observe/observe.setup';
 
-const observeImports =
-  process.env.OBSERVE_ENABLED === 'true'
-    ? [
-        ObserveModule.forRootAsync({
-          imports: [ConfigModule],
-          inject: [ConfigService],
-          useFactory: (configService: ConfigService<AllConfigType>) => ({
-            appKey: configService.getOrThrow('observe.appKey', { infer: true }),
-            appSecret: configService.getOrThrow('observe.appSecret', {
-              infer: true,
-            }),
-            serviceId: configService.getOrThrow('observe.serviceId', {
-              infer: true,
-            }),
-            serviceVersion: configService.get('observe.serviceVersion', {
-              infer: true,
-            }),
-            tracesSampleRate: configService.getOrThrow(
-              'observe.tracesSampleRate',
-              { infer: true },
-            ),
+const observeImports = isObserveEnabled
+  ? [
+      ObserveModule.forRootAsync({
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (configService: ConfigService<AllConfigType>) => ({
+          appKey: configService.getOrThrow('observe.appKey', { infer: true }),
+          appSecret: configService.getOrThrow('observe.appSecret', {
+            infer: true,
           }),
+          serviceId: configService.getOrThrow('observe.serviceId', {
+            infer: true,
+          }),
+          serviceVersion: configService.get('observe.serviceVersion', {
+            infer: true,
+          }),
+          tracesSampleRate: configService.getOrThrow(
+            'observe.tracesSampleRate',
+            { infer: true },
+          ),
         }),
-      ]
-    : [];
+      }),
+    ]
+  : [];
 
 @Module({
   imports: [
